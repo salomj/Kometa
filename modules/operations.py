@@ -438,17 +438,17 @@ class Operations:
                                 break
                             try:
                                 if option == "tmdb":
-                                    new_genres.append(tmdb_obj().genres) # noqa
+                                    new_genres.extend(tmdb_obj().genres) # noqa
                                 elif option == "imdb":
-                                    new_genres.append(self.config.IMDb.get_genres(imdb_id))
+                                    new_genres.extend(self.config.IMDb.get_genres(imdb_id))
                                 elif option == "omdb":
-                                    new_genres.append(omdb_obj().genres) # noqa
+                                    new_genres.extend(omdb_obj().genres) # noqa
                                 elif option == "tvdb":
-                                    new_genres.append(tvdb_obj().genres) # noqa
+                                    new_genres.extend(tvdb_obj().genres) # noqa
                                 elif str(option) in anidb.weights:
-                                    new_genres.append([str(t).title() for t, w in anidb_obj().tags.items() if w >= anidb.weights[str(option)]]) # noqa
+                                    new_genres.extend([str(t).title() for t, w in anidb_obj().tags.items() if w >= anidb.weights[str(option)]]) # noqa
                                 elif option == "mal":
-                                    new_genres.append(mal_obj().genres) # noqa
+                                    new_genres.extend(mal_obj().genres) # noqa
                                 else:
                                     new_genres = option
                                 if not new_genres:
