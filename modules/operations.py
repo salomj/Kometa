@@ -449,12 +449,10 @@ class Operations:
                                     new_genres.extend([str(t).title() for t, w in anidb_obj().tags.items() if w >= anidb.weights[str(option)]]) # noqa
                                 elif option == "mal":
                                     new_genres.extend(mal_obj().genres) # noqa
-                                else:
-                                    new_genres = option
                                 if not new_genres:
                                     logger.info(f"No {option} Genres Found")
                                     raise Failed
-                                break
+                                continue
                             except Failed:
                                 continue
 
