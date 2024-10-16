@@ -104,6 +104,7 @@ class AniDBObj:
         self._data = data
         self.main_title = None
         self.titles = []
+        self.official_title = None
         self.language_titles = []
         self.language_title = None
         self.studio = None
