@@ -1515,7 +1515,7 @@ class Plex(Library):
         imdb_id = None
         if self.config.Cache:
             t_id, i_id, guid_media_type, _ = self.config.Cache.query_guid_map(item.guid)
-            if t_id and media_type != "show_tmdb":
+            if t_id and guid_media_type != "show_tmdb":
                 if "movie" in guid_media_type:
                     tmdb_id = t_id[0]
                 else:
