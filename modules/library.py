@@ -30,6 +30,7 @@ class Library(ABC):
         self.overlay_files = []
         self.images_files = []
         self.movie_map = {}
+        self.tmdb_show_map = {}
         self.show_map = {}
         self.imdb_map = {}
         self.anidb_map = {}
@@ -408,11 +409,11 @@ class Library(ABC):
             if key not in self.movie_rating_key_map and key not in self.show_rating_key_map:
                 if isinstance(item, tuple):
                     item_type, check_id = self.config.Convert.scan_guid(guid)
-                    id_type, main_id, imdb_id, _ = self.config.Convert.ids_from_cache(key, guid, item_type, check_id, self)
+                    id_type, main_id, library_id, imdb_id, _ = self.config.Convert.ids_from_cache(key, guid, item_type, check_id, self)
                 else:
-                    id_type, main_id, imdb_id = self.config.Convert.get_id(item, self)
+                    id_type, main_id, library_id, imdb_id = self.config.Convert.get_id(item, self)
                 if main_id:
-                    if id_type == "movie":
+                    if library_id == "TMDb":
                         if len(main_id) > 1:
                             for _id in main_id:
                                 try:
@@ -423,8 +424,11 @@ class Library(ABC):
                                     pass
                         else:
                             self.movie_rating_key_map[key] = main_id[0]
-                        util.add_dict_list(main_id, key, self.movie_map)
-                    elif id_type == "show":
+                        if id_type == "movie":
+                            util.add_dict_list(main_id, key, self.movie_map)
+                        elif id_type == "show":
+                            util.add_dict_list(main_id, key, self.tmdb_show_map)
+                    elif library_id == "TVDb" and id_type == "show":
                         if len(main_id) > 1:
                             for _id in main_id:
                                 try:

@@ -343,7 +343,7 @@ class AniDB:
         if expired or not anidb_dict:
             if not ignore_cache:
                 try:
-                    anidb_dict = self.get_json(f"{cache_url}/{anidb_id}.json")
+                    anidb_dict = self.requests.get_json(f"{cache_url}/{anidb_id}.json")
                     if anidb_dict:
                         from_json = True
                 except ValueError:

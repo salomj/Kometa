@@ -2293,11 +2293,18 @@ class CollectionBuilder:
                             in_id = int(in_id)
                             if in_id not in self.ignore_ids:
                                 found = False
-                                for pl_library in self.libraries:
-                                    if in_id in pl_library.movie_map:
-                                        found = True
-                                        rating_keys = pl_library.movie_map[in_id]
-                                        break
+                                if id_info == "show":
+                                    for pl_library in self.libraries:
+                                        if in_id in pl_library.tmdb_show_map:
+                                            found = True
+                                            rating_keys = pl_library.tmdb_show_map[in_id]
+                                            break
+                                else:
+                                    for pl_library in self.libraries:
+                                        if in_id in pl_library.movie_map:
+                                            found = True
+                                            rating_keys = pl_library.movie_map[in_id]
+                                            break
                                 if not found and in_id not in self.missing_movies:
                                     self.missing_movies.append(in_id)
                     elif id_type == "tvdb_season" and (self.builder_level == "season" or self.playlist):
