@@ -607,16 +607,16 @@ class Operations:
                                 elif option == "anidb_official":
                                     new_title = anidb_obj().official_title # noqa
                                 elif option == "anidb_lang":
-                                    new_original_title = anidb_obj().language_title # noqa
+                                    new_title = anidb_obj().language_title # noqa
                                 elif option == "mal":
-                                    new_original_title = mal_obj().title # noqa
+                                    new_title = mal_obj().title # noqa
                                 elif option == "mal_english":
-                                    new_original_title = mal_obj().title_english # noqa
+                                    new_title = mal_obj().title_english # noqa
                                 elif option == "mal_japanese":
-                                    new_original_title = mal_obj().title_japanese # noqa
+                                    new_title = mal_obj().title_japanese # noqa
                                 else:
-                                    new_original_title = option
-                                if not new_original_title:
+                                    new_title = option
+                                if not new_title:
                                     logger.info(f"No {option} Title Found")
                                     raise Failed
                                 if str(current_title) != str(new_title):
