@@ -106,7 +106,6 @@ class AniDBObj:
         self.titles = []
         self.language_titles = []
         self.language_title = None
-        self. = None
         self.studio = None
         self.rating = None
         self.average = None
@@ -130,8 +129,8 @@ class AniDBObj:
             if not self.official_title:
                 self.language_titles = self.main_title
 
-            for type in [ "MAIN", "OFFICIAL", "TITLE_CARD", "SHORT", "SYNONYM", "KANA_READING", "OTHER" ]
-                for title in self.all_titles
+            for type in [ "MAIN", "OFFICIAL", "TITLE_CARD", "SHORT", "SYNONYM", "KANA_READING", "OTHER" ]:
+                for title in self.all_titles:
                     if title["type"] == type and self._anidb.language and (title["language"] == self._anidb.language.upper() or title["language"] == language_matcher[self._anidb.language.upper()]):
                         self.language_titles.append(title["title"])
             if self.language_titles:
