@@ -128,7 +128,7 @@ class AniDBObj:
                 if title["type"] == "OFFICIAL" and self._anidb.language and (title["language"] == self._anidb.language.upper() or title["language"] == LANGUAGE_MATCHER[self._anidb.language.upper()]):
                     self.official_title = title["title"]
             if not self.official_title:
-                self.language_titles = self.main_title
+                self.official_title = self.main_title
 
             for type in [ "MAIN", "OFFICIAL", "TITLE_CARD", "SHORT", "SYNONYM", "KANA_READING", "OTHER" ]:
                 for title in self.all_titles:
