@@ -82,10 +82,17 @@ mass_studio_options = {
     "lock": "Lock Rating", "unlock": "Unlock Rating", "remove": "Remove and Lock Rating", "reset": "Remove and Unlock Rating",
     "tmdb": "Use TMDb Studio", "anidb": "Use AniDB Animation Work", "mal": "Use MyAnimeList Studio"
 }
+mass_title_options = {
+    "lock": "Lock Original Title", "unlock": "Unlock Original Title", "reset": "Remove and Unlock Original Title",
+    "anidb": "Use AniDB Main Title", "anidb_official": "Use AniDB Official Title based on the language attribute in the config file",
+    "anidb_lang": "Use AniDB Any Title based on the language attribute in the config file", "mal": "Use MyAnimeList Main Title",
+    "mal_english": "Use MyAnimeList English Title", "mal_japanese": "Use MyAnimeList Japanese Title",
+}
 mass_original_title_options = {
     "lock": "Lock Original Title", "unlock": "Unlock Original Title", "remove": "Remove and Lock Original Title", "reset": "Remove and Unlock Original Title",
     "anidb": "Use AniDB Main Title", "anidb_official": "Use AniDB Official Title based on the language attribute in the config file",
-    "mal": "Use MyAnimeList Main Title", "mal_english": "Use MyAnimeList English Title", "mal_japanese": "Use MyAnimeList Japanese Title",
+    "anidb_lang": "Use AniDB Any Title based on the language attribute in the config file", "mal": "Use MyAnimeList Main Title",
+    "mal_english": "Use MyAnimeList English Title", "mal_japanese": "Use MyAnimeList Japanese Title",
 }
 mass_available_options = {
     "lock": "Lock Originally Available", "unlock": "Unlock Originally Available", "remove": "Remove and Lock Originally Available", "reset": "Remove and Unlock Originally Available",
@@ -133,6 +140,7 @@ library_operations = {
     "mass_audience_rating_update": mass_rating_options, "mass_episode_audience_rating_update": mass_episode_rating_options,
     "mass_critic_rating_update": mass_rating_options, "mass_episode_critic_rating_update": mass_episode_rating_options,
     "mass_user_rating_update": mass_rating_options, "mass_episode_user_rating_update": mass_episode_rating_options,
+    "mass_title_update": mass_title_options,
     "mass_original_title_update": mass_original_title_options, "mass_imdb_parental_labels": imdb_label_options,
     "mass_originally_available_update": mass_available_options, "mass_added_at_update": mass_available_options,
     "mass_collection_mode": "mass_collection_mode", "mass_poster_update": "dict", "mass_background_update": "dict",

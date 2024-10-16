@@ -10,7 +10,7 @@ logger = util.logger
 meta_operations = [
     "mass_audience_rating_update", "mass_user_rating_update", "mass_critic_rating_update",
     "mass_episode_audience_rating_update", "mass_episode_user_rating_update", "mass_episode_critic_rating_update",
-    "mass_genre_update", "mass_content_rating_update", "mass_originally_available_update", "mass_added_at_update",
+    "mass_genre_update", "mass_content_rating_update", "mass_originally_available_update", "mass_added_at_update", "mass_title_update",
     "mass_original_title_update", "mass_poster_update", "mass_background_update", "mass_studio_update"
 ]
 name_display = {
@@ -44,6 +44,7 @@ class Operations:
         logger.debug(f"Mass Episode Critic Rating Update: {self.library.mass_episode_critic_rating_update}")
         logger.debug(f"Mass Episode User Rating Update: {self.library.mass_episode_user_rating_update}")
         logger.debug(f"Mass Content Rating Update: {self.library.mass_content_rating_update}")
+        logger.debug(f"Mass Title Update: {self.library.mass_title_update}")
         logger.debug(f"Mass Original Title Update: {self.library.mass_original_title_update}")
         logger.debug(f"Mass Originally Available Update: {self.library.mass_originally_available_update}")
         logger.debug(f"Mass Added At Update: {self.library.mass_added_at_update}")
@@ -437,17 +438,17 @@ class Operations:
                                 break
                             try:
                                 if option == "tmdb":
-                                    new_genres = tmdb_obj().genres # noqa
+                                    new_genres.append(tmdb_obj().genres) # noqa
                                 elif option == "imdb":
-                                    new_genres = self.config.IMDb.get_genres(imdb_id)
+                                    new_genres.append(self.config.IMDb.get_genres(imdb_id))
                                 elif option == "omdb":
-                                    new_genres = omdb_obj().genres # noqa
+                                    new_genres.append(omdb_obj().genres) # noqa
                                 elif option == "tvdb":
-                                    new_genres = tvdb_obj().genres # noqa
+                                    new_genres.append(tvdb_obj().genres) # noqa
                                 elif str(option) in anidb.weights:
-                                    new_genres = [str(t).title() for t, w in anidb_obj().tags.items() if w >= anidb.weights[str(option)]] # noqa
+                                    new_genres.append([str(t).title() for t, w in anidb_obj().tags.items() if w >= anidb.weights[str(option)]]) # noqa
                                 elif option == "mal":
-                                    new_genres = mal_obj().genres # noqa
+                                    new_genres.append(mal_obj().genres) # noqa
                                 else:
                                     new_genres = option
                                 if not new_genres:
@@ -577,6 +578,54 @@ class Operations:
                         unlock_edits["contentRating"].append(item.ratingKey)
                         item_edits += "\nUnlock Content Rating (Batched)"
 
+                if self.library.mass_title_update:
+                    current_title = item.title
+                    for option in self.library.mass_title_update:
+                        if option in ["lock", "remove"]:
+                            if "title" not in locked_fields:
+                                if "title" not in lock_edits:
+                                    lock_edits["title"] = []
+                                lock_edits["title"].append(item.ratingKey)
+                                item_edits += "\nLock Title (Batched)"
+                            break
+                        elif option in ["unlock", "reset"]:
+                            if option == "reset" and current_original:
+                                if "title" not in reset_edits:
+                                    reset_edits["title"] = []
+                                reset_edits["title"].append(item.ratingKey)
+                                item_edits += "\nReset Title (Batched)"
+                            elif "title" in locked_fields:
+                                if "title" not in unlock_edits:
+                                    unlock_edits["title"] = []
+                                unlock_edits["title"].append(item.ratingKey)
+                                item_edits += "\nUnlock Title (Batched)"
+                            break
+                        else:
+                            try:
+                                if option == "anidb":
+                                    new_title = anidb_obj().main_title # noqa
+                                elif option == "anidb_official":
+                                    new_title = anidb_obj().official_title # noqa
+                                elif option == "anidb_lang":
+                                    new_original_title = anidb_obj().language_title # noqa
+                                elif option == "mal":
+                                    new_original_title = mal_obj().title # noqa
+                                elif option == "mal_english":
+                                    new_original_title = mal_obj().title_english # noqa
+                                elif option == "mal_japanese":
+                                    new_original_title = mal_obj().title_japanese # noqa
+                                else:
+                                    new_original_title = option
+                                if not new_original_title:
+                                    logger.info(f"No {option} Title Found")
+                                    raise Failed
+                                if str(current_title) != str(new_title):
+                                    item.editTitle(new_title)
+                                    item_edits += f"\nUpdated Title | {new_title}"
+                                break
+                            except Failed:
+                                continue
+
                 if self.library.mass_original_title_update:
                     current_original = item.originalTitle
                     for option in self.library.mass_original_title_update:
@@ -610,6 +659,8 @@ class Operations:
                                     new_original_title = anidb_obj().main_title # noqa
                                 elif option == "anidb_official":
                                     new_original_title = anidb_obj().official_title # noqa
+                                elif option == "anidb_lang":
+                                    new_original_title = anidb_obj().language_title # noqa
                                 elif option == "mal":
                                     new_original_title = mal_obj().title # noqa
                                 elif option == "mal_english":

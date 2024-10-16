@@ -1881,9 +1881,41 @@
                         }
                     ]
                 },
+                "mass_title_update": {
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "enum": ["anidb","anidb_official","mal","mal_english","mal_japanese","lock","unlock","reset"]
+                        },
+                        {
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items":
+                            {
+                                "anyOf": [
+                                    {"enum": ["anidb","anidb_official","mal","mal_english","mal_japanese","lock","unlock","reset"]}
+                                ]
+                            }
+                        }
+                    ]
+                },
                 "mass_original_title_update": {
-                    "type": "string",
-                    "enum": ["anidb","anidb_official","mal","mal_english","mal_japanese","lock","unlock","remove","reset"]
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "enum": ["anidb","anidb_official","mal","mal_english","mal_japanese","lock","unlock","remove","reset"]
+                        },
+                        {
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items":
+                            {
+                                "anyOf": [
+                                    {"enum": ["anidb","anidb_official","mal","mal_english","mal_japanese","lock","unlock","remove","reset"]}
+                                ]
+                            }
+                        }
+                    ]
                 },
                 "mass_studio_update": {
                     "anyOf": [
