@@ -373,7 +373,7 @@ class Convert:
                         if tvdb:
                             tvdb_id.append(int(tvdb))
                     if not tvdb_id:
-                        raise Failed(f"Unable to convert TMDb ID: {', '.join([str(t) for t in tmdb_id])} to TVDb ID")
+                        logger.info(f"Unable to convert TMDb ID: {', '.join([str(t) for t in tmdb_id])} to TVDb ID")D")
 
             if not imdb_id and tvdb_id:
                 for tvdb in tvdb_id:
