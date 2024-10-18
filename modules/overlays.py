@@ -260,7 +260,7 @@ class Overlays:
                                             found_rating = None
                                             try:
                                                 item_to_id = item.show() if isinstance(item, (Season, Episode)) else item
-                                                tmdb_id, tvdb_id, imdb_id = self.library.get_ids(item_to_id)
+                                                tmdb_id, tvdb_id, imdb_id, tmdb_show_id = self.library.get_ids(item_to_id)
                                                 if format_var == "tmdb_rating":
                                                     _item = self.config.TMDb.get_item(item_to_id, tmdb_id, tvdb_id, imdb_id, is_movie=self.library.is_movie)
                                                     if _item:
@@ -357,7 +357,7 @@ class Overlays:
                                                         found_rating = mdb_item.score / 10 if mdb_item.score else None
 
                                                 elif str(format_var).startswith(("anidb", "mal")):
-                                                    anidb_id = self.config.Convert.ids_to_anidb(self.library, item.ratingKey, tvdb_id, imdb_id, tmdb_id)
+                                                    anidb_id = self.config.Convert.ids_to_anidb(self.library, item.ratingKey, tvdb_id, imdb_id, tmdb_id, tmdb_show_id)
 
                                                     if str(format_var).startswith("anidb"):
                                                         if anidb_id:

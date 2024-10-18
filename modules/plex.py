@@ -1511,11 +1511,14 @@ class Plex(Library):
 
     def get_ids(self, item):
         tmdb_id = None
+        tmdb_show_id = None
         tvdb_id = None
         imdb_id = None
         if self.config.Cache:
             t_id, i_id, guid_media_type, _ = self.config.Cache.query_guid_map(item.guid)
-            if t_id and guid_media_type != "show_tmdb":
+            if t_id:
+                if guid_media_type == "show_tmdb":
+                    tmdb_show_id = t_id[0]
                 if "movie" in guid_media_type:
                     tmdb_id = t_id[0]
                 else:
@@ -1528,7 +1531,7 @@ class Plex(Library):
             tvdb_id = self.get_tvdb_from_map(item)
         if not imdb_id:
             imdb_id = self.get_imdb_from_map(item)
-        return tmdb_id, tvdb_id, imdb_id
+        return tmdb_id, tvdb_id, imdb_id, tmdb_show_id
 
     def get_locked_attributes(self, item, titles=None, year_titles=None, item_type=None):
         if not item_type:

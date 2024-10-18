@@ -143,7 +143,7 @@ class Operations:
 
                 locked_fields = [f.name for f in item.fields if f.locked]
 
-                tmdb_id, tvdb_id, imdb_id = self.library.get_ids(item)
+                tmdb_id, tvdb_id, imdb_id, tmdb_show_id = self.library.get_ids(item)
 
                 item_edits = ""
 
@@ -287,7 +287,7 @@ class Operations:
 
                 anidb_id = None
                 def get_anidb_id():
-                    temp_id = self.config.Convert.ids_to_anidb(self.library, item.ratingKey, tvdb_id, imdb_id, tmdb_id)
+                    temp_id = self.config.Convert.ids_to_anidb(self.library, item.ratingKey, tvdb_id, imdb_id, tmdb_id, tmdb_show_id)
                     return temp_id if temp_id else False
 
                 _anidb_obj = None
