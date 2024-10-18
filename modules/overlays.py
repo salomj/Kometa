@@ -369,7 +369,8 @@ class Overlays:
                                                             elif format_var == "anidb_score_rating":
                                                                 found_rating = anidb_obj.score
                                                         else:
-                                                            raise Failed(f"No AniDB ID for Guid: {item.guid}")
+                                                            logger.info(f"TMDb: {tmdb_id}, TVDb: {tvdb_id}, IMDb: {imdb_id}, TMDb (show): {tmdb_show_id}")
+                                                            raise Failed(f"No AniDB ID (Overlays) for Guid: {item.guid}")
                                                     else:
                                                         if item.ratingKey in self.library.reverse_mal:
                                                             mal_id = self.library.reverse_mal[item.ratingKey]

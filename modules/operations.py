@@ -303,7 +303,8 @@ class Operations:
                             except Failed as err:
                                 logger.error(str(err))
                         else:
-                            logger.warning(f"No AniDB ID for Guid: {item.guid}")
+                            logger.info(f"TMDb: {tmdb_id}, TVDb: {tvdb_id}, IMDb: {imdb_id}, TMDb (show): {tmdb_show_id}")
+                            logger.warning(f"No AniDB ID (Operations) for Guid: {item.guid}")
                     if not _anidb_obj:
                         raise Failed
                     return _anidb_obj
