@@ -48,19 +48,11 @@ class Convert:
             if "tmdb_movie_id" in ids:
                 self._anidb_to_tmdb_movie[anidb_id] = util.get_list(ids["tmdb_movie_id"])
                 for tm_id in util.get_list(ids["tmdb_movie_id"]):
-                    self._tmdb_movie_to_anidb[tm_id] = anidb_id
+                    self._tmdb_movie_to_anidb[int(tm_id)] = anidb_id
             if "tmdb_show_id" in ids:
                 self._anidb_to_tmdb_show[anidb_id] = util.get_list(ids["tmdb_show_id"])
                 for tm_id in util.get_list(ids["tmdb_show_id"]):
-                    self._tmdb_show_to_anidb[tm_id] = anidb_id
-        logger.info(f"tmdb_movie_id: 465582 => _tmdb_movie_to_anidb: {self._anidb_to_imdb}")
-        logger.info(f"anidb_id: 3958 => _anidb_to_tmdb_movie: {self._imdb_to_anidb}")
-        logger.info(f"tmdb_movie_id: 465582 => _tmdb_movie_to_anidb: {self._tvdb_to_anidb}")
-        logger.info(f"anidb_id: 3958 => _anidb_to_tmdb_movie: {self._anidb_to_tvdb}")
-        logger.info(f"tmdb_movie_id: 465582 => _tmdb_movie_to_anidb: {self._tmdb_movie_to_anidb}")
-        logger.info(f"anidb_id: 3958 => _anidb_to_tmdb_movie: {self._anidb_to_tmdb_movie}")
-        logger.info(f"tmdb_show_id: 89830 => _tmdb_show_to_anidb: {self._tmdb_show_to_anidb}")
-        logger.info(f"anidb_id: 3952 => _anidb_to_tmdb_show: {self._anidb_to_tmdb_show}")
+                    self._tmdb_show_to_anidb[int(tm_id)] = anidb_id
 
     def imdb_to_anidb(self, imdb_id):
         if imdb_id in self._imdb_to_anidb:
@@ -75,20 +67,18 @@ class Convert:
             raise Failed(f"AniDB ID not found for TVDb ID: {tvdb_id}")
 
     def ids_to_anidb(self, library, rating_key, tvdb_id, imdb_id, tmdb_movie_id, tmdb_show_id):
-        logger.info(f"rating_key: {rating_key}, TMDb: {tmdb_movie_id}, TVDb: {tvdb_id}, IMDb: {imdb_id}, TMDb (show): {tmdb_show_id}")
         if rating_key in library.reverse_anidb:
             return library.reverse_anidb[rating_key]
         elif tvdb_id and int(tvdb_id) in self._tvdb_to_anidb:
             return self._tvdb_to_anidb[int(tvdb_id)]
         else:
-            if tmdb_show_id in self._tmdb_show_to_anidb:
-                return self._tmdb_show_to_anidb[f"{tmdb_show_id}"]
+            if tmdb_show_id and int(tmdb_show_id) in self._tmdb_show_to_anidb:
+                return self._tmdb_show_to_anidb[int(tmdb_show_id)]
             elif imdb_id in self._imdb_to_anidb:
                 return self._imdb_to_anidb[imdb_id]
-            elif tmdb_movie_id in self._tmdb_movie_to_anidb:
-                return self._tmdb_movie_to_anidb[f"{tmdb_movie_id}"]
+            elif tmdb_movie_id and int(tmdb_movie_id) in self._tmdb_movie_to_anidb:
+                return self._tmdb_movie_to_anidb[int(tmdb_movie_id)]
             else:
-                logger.info(f"AniDB ID not found for rating_key: {rating_key}, TMDb: {tmdb_movie_id}, TVDb: {tvdb_id}, IMDb: {imdb_id}, TMDb (show): {tmdb_show_id}")
                 return None
 
     def anidb_to_mal(self, anidb_id):
