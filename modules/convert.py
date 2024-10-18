@@ -67,6 +67,7 @@ class Convert:
             raise Failed(f"AniDB ID not found for TVDb ID: {tvdb_id}")
 
     def ids_to_anidb(self, library, rating_key, tvdb_id, imdb_id, tmdb_movie_id, tmdb_show_id):
+        logger.info(f"rating_key: {rating_key}, TMDb: {tmdb_movie_id}, TVDb: {tvdb_id}, IMDb: {imdb_id}, TMDb (show): {tmdb_show_id}")
         if rating_key in library.reverse_anidb:
             return library.reverse_anidb[rating_key]
         elif tvdb_id and int(tvdb_id) in self._tvdb_to_anidb:
@@ -79,6 +80,7 @@ class Convert:
             elif tmdb_movie_id in self._tmdb_movie_to_anidb:
                 return self._tmdb_movie_to_anidb[tmdb_movie_id]
             else:
+                logger.info(f"AniDB ID not found for rating_key: {rating_key}, TMDb: {tmdb_movie_id}, TVDb: {tvdb_id}, IMDb: {imdb_id}, TMDb (show): {tmdb_show_id}")
                 return None
 
     def anidb_to_mal(self, anidb_id):
