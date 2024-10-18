@@ -53,6 +53,10 @@ class Convert:
                 self._anidb_to_tmdb_show[anidb_id] = util.get_list(ids["tmdb_show_id"])
                 for tm_id in util.get_list(ids["tmdb_show_id"]):
                     self._tmdb_show_to_anidb[tm_id] = anidb_id
+        logger.info(f"tmdb_movie_id: 465582 => _tmdb_movie_to_anidb: {self._tmdb_movie_to_anidb[465582]}")
+        logger.info(f"anidb_id: 3958 => _anidb_to_tmdb_movie: {self._anidb_to_tmdb_movie[3958]}")
+        logger.info(f"tmdb_show_id: 89830 => _tmdb_show_to_anidb: {self._tmdb_show_to_anidb[89830]}")
+        logger.info(f"anidb_id: 3952 => _anidb_to_tmdb_show: {self._anidb_to_tmdb_show[3952]}")
 
     def imdb_to_anidb(self, imdb_id):
         if imdb_id in self._imdb_to_anidb:
