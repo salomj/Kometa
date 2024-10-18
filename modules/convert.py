@@ -82,11 +82,11 @@ class Convert:
             return self._tvdb_to_anidb[int(tvdb_id)]
         else:
             if tmdb_show_id in self._tmdb_show_to_anidb:
-                return self._tmdb_show_to_anidb[tmdb_show_id]
+                return self._tmdb_show_to_anidb[f"{tmdb_show_id}"]
             elif imdb_id in self._imdb_to_anidb:
                 return self._imdb_to_anidb[imdb_id]
             elif tmdb_movie_id in self._tmdb_movie_to_anidb:
-                return self._tmdb_movie_to_anidb[tmdb_movie_id]
+                return self._tmdb_movie_to_anidb[f"{tmdb_movie_id}"]
             else:
                 logger.info(f"AniDB ID not found for rating_key: {rating_key}, TMDb: {tmdb_movie_id}, TVDb: {tvdb_id}, IMDb: {imdb_id}, TMDb (show): {tmdb_show_id}")
                 return None
