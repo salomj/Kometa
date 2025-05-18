@@ -72,6 +72,8 @@ class Convert:
         elif tvdb_id and int(tvdb_id) in self._tvdb_to_anidb:
             return self._tvdb_to_anidb[int(tvdb_id)]
         else:
+            if tmdb_show_id in self._tmdb_show_to_anidb:
+               return self._tmdb_show_to_anidb[int(tmdb_show_id)]
             tmdb_show_id = self.tvdb_to_tmdb(tvdb_id) if tvdb_id else None
             if tmdb_show_id and int(tmdb_show_id) in self._tmdb_show_to_anidb:
                 return self._tmdb_show_to_anidb[int(tmdb_show_id)]
