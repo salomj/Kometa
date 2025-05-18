@@ -15,6 +15,7 @@ from modules.meta import PlaylistFile
 from modules.mojo import BoxOfficeMojo
 from modules.notifiarr import Notifiarr
 from modules.gotify import Gotify
+from modules.ntfy import Ntfy
 from modules.omdb import OMDb
 from modules.overlays import Overlays
 from modules.plex import Plex
@@ -104,7 +105,11 @@ mass_image_options = {
 }
 mass_episode_rating_options = {
     "lock": "Lock Rating", "unlock": "Unlock Rating", "remove": "Remove and Lock Rating", "reset": "Remove and Unlock Rating",
-    "tmdb": "Use TMDb Rating", "imdb": "Use IMDb Rating"
+    "plex_tmdb": "Use TMDB Rating through Plex",
+    "plex_imdb": "Use IMDB Rating through Plex",
+    "tmdb": "Use TMDb Rating", 
+    "imdb": "Use IMDb Rating", 
+    "trakt": "Use Trakt Rating"
 }
 mass_rating_options = {
     "lock": "Lock Rating",
@@ -113,8 +118,15 @@ mass_rating_options = {
     "reset": "Remove and Unlock Rating",
     "tmdb": "Use TMDb Rating",
     "imdb": "Use IMDb Rating",
+    "trakt": "Use Trakt Rating",
     "trakt_user": "Use Trakt User Rating",
     "omdb": "Use IMDb Rating through OMDb",
+    "omdb_metascore": "Use Metacritic Metascore through OMDb",
+    "omdb_tomatoes": "Use Rotten Tomatoes Rating through OMDb",
+    "plex_imdb": "Use IMDB Rating through Plex",
+    "plex_tmdb": "Use TMDB Rating through Plex",
+    "plex_tomatoes": "Use Rotten Tomatoes Rating through Plex",
+    "plex_tomatoesaudience": "Use Rotten Tomatoes Audience Rating through Plex",
     "mdb": "Use MDBList Score",
     "mdb_average": "Use MDBList Average Score",
     "mdb_imdb": "Use IMDb Rating through MDBList",
@@ -223,12 +235,30 @@ class ConfigFile:
         replace_attr(self.data, "sync_mode", "plex")
         replace_attr(self.data, "show_unmanaged", "plex")
         replace_attr(self.data, "show_filtered", "plex")
+        replace_attr(self.data, "show_unfiltered", "plex")
         replace_attr(self.data, "show_missing", "plex")
         replace_attr(self.data, "save_missing", "plex")
         if self.data["libraries"]:
             for library in self.data["libraries"]:
+
                 if not self.data["libraries"][library]:
                     continue
+
+                def fail_on_definition(found_this):
+                    raise Failed(f"The '{library}' library config contains {found_this} definitions. These belong in external YAML files, not in the config.yml.")
+                if "collections" in self.data["libraries"][library]:
+                    fail_on_definition("collections")
+                if "dynamic_collections" in self.data["libraries"][library]:
+                    fail_on_definition("dynamic_collections")
+                if "metadata" in self.data["libraries"][library]:
+                    fail_on_definition("metadata")
+                if "overlays" in self.data["libraries"][library]:
+                    fail_on_definition("overlays")
+                if "templates" in self.data["libraries"][library]:
+                    fail_on_definition("templates")
+                if "playlists" in self.data["libraries"][library]:
+                    fail_on_definition("playlists")
+
                 if "metadata_path" in self.data["libraries"][library]:
                     logger.warning("Config Warning: metadata_path has been deprecated and split into collection_files and metadata_files, Please visit the wiki to learn more about this transition.")
                     path_dict = self.data["libraries"][library].pop("metadata_path")
@@ -248,6 +278,7 @@ class ConfigFile:
                     replace_attr(self.data["libraries"][library], "sync_mode", "plex")
                     replace_attr(self.data["libraries"][library], "show_unmanaged", "plex")
                     replace_attr(self.data["libraries"][library], "show_filtered", "plex")
+                    replace_attr(self.data["libraries"][library], "show_unfiltered", "plex")
                     replace_attr(self.data["libraries"][library], "show_missing", "plex")
                     replace_attr(self.data["libraries"][library], "save_missing", "plex")
                 if "settings" in self.data["libraries"][library] and self.data["libraries"][library]["settings"]:
@@ -317,6 +348,7 @@ class ConfigFile:
         if "mdblist" in self.data:                     self.data["mdblist"] = self.data.pop("mdblist")
         if "notifiarr" in self.data:                   self.data["notifiarr"] = self.data.pop("notifiarr")
         if "gotify" in self.data:                      self.data["gotify"] = self.data.pop("gotify")
+        if "ntfy" in self.data:                        self.data["ntfy"] = self.data.pop("ntfy")
         if "anidb" in self.data:                       self.data["anidb"] = self.data.pop("anidb")
         if "radarr" in self.data:
             if "monitor" in self.data["radarr"] and isinstance(self.data["radarr"]["monitor"], bool):
@@ -473,19 +505,20 @@ class ConfigFile:
             "show_unmanaged": check_for_attribute(self.data, "show_unmanaged", parent="settings", var_type="bool", default=True),
             "show_unconfigured": check_for_attribute(self.data, "show_unconfigured", parent="settings", var_type="bool", default=True),
             "show_filtered": check_for_attribute(self.data, "show_filtered", parent="settings", var_type="bool", default=False),
+            "show_unfiltered": check_for_attribute(self.data, "show_unfiltered", parent="settings", var_type="bool", default=False),
             "show_options": check_for_attribute(self.data, "show_options", parent="settings", var_type="bool", default=False),
             "show_missing": check_for_attribute(self.data, "show_missing", parent="settings", var_type="bool", default=True),
             "save_report": check_for_attribute(self.data, "save_report", parent="settings", var_type="bool", default=False),
             "tvdb_language": check_for_attribute(self.data, "tvdb_language", parent="settings", default="default"),
             "ignore_ids": check_for_attribute(self.data, "ignore_ids", parent="settings", var_type="int_list", default_is_none=True),
             "ignore_imdb_ids": check_for_attribute(self.data, "ignore_imdb_ids", parent="settings", var_type="lower_list", default_is_none=True),
-            "playlist_sync_to_users": check_for_attribute(self.data, "playlist_sync_to_users", parent="settings", default="all", default_is_none=True),
+            "playlist_sync_to_users": check_for_attribute(self.data, "playlist_sync_to_users", parent="settings", default_is_none=True),
             "playlist_exclude_users": check_for_attribute(self.data, "playlist_exclude_users", parent="settings", default_is_none=True),
             "playlist_report": check_for_attribute(self.data, "playlist_report", parent="settings", var_type="bool", default=True),
             "verify_ssl": check_for_attribute(self.data, "verify_ssl", parent="settings", var_type="bool", default=True, save=False),
             "custom_repo": check_for_attribute(self.data, "custom_repo", parent="settings", default_is_none=True),
-            "overlay_artwork_filetype": check_for_attribute(self.data, "overlay_artwork_filetype", parent="settings", test_list=filetype_list, translations={"webp": "webp_lossy"}, default="jpg"),
-            "overlay_artwork_quality": check_for_attribute(self.data, "overlay_artwork_quality", parent="settings", var_type="int", default_is_none=True, int_min=1, int_max=100),
+            "overlay_artwork_filetype": check_for_attribute(self.data, "overlay_artwork_filetype", parent="settings", test_list=filetype_list, translations={"webp": "webp_lossy"}, default="webp_lossy"),
+            "overlay_artwork_quality": check_for_attribute(self.data, "overlay_artwork_quality", parent="settings", var_type="int", default=90, int_min=1, int_max=100),
             "assets_for_all": check_for_attribute(self.data, "assets_for_all", parent="settings", var_type="bool", default=False, save=False, do_print=False)
         }
         self.custom_repo = None
@@ -493,6 +526,8 @@ class ConfigFile:
             repo = self.general["custom_repo"]
             if "https://github.com/" in repo:
                 repo = repo.replace("https://github.com/", "https://raw.githubusercontent.com/").replace("/tree/", "/")
+                if not repo.endswith("/"):
+                    repo += "/"
             self.custom_repo = repo
 
         if not self.general["verify_ssl"]:
@@ -531,6 +566,7 @@ class ConfigFile:
             self.Cache = Cache(self.config_path, self.general["cache_expiration"])
         else:
             self.Cache = None
+
         self.GitHub = GitHub(self.Requests, {
             "token": check_for_attribute(self.data, "token", parent="github", default_is_none=True)
         })
@@ -572,6 +608,25 @@ class ConfigFile:
         else:
             logger.info("gotify attribute not found")
 
+        self.NtfyFactory = None
+        if "ntfy" in self.data:
+            logger.info("Connecting to ntfy...")
+            try:
+                self.NtfyFactory = Ntfy(self.Requests, {
+                    "url": check_for_attribute(self.data, "url", parent="ntfy", throw=True),
+                    "token": check_for_attribute(self.data, "token", parent="ntfy", throw=True),
+                    "topic": check_for_attribute(self.data, "topic", parent="ntfy", throw=True)
+                })
+            except Failed as e:
+                if str(e).endswith("is blank"):
+                    logger.warning(e)
+                else:
+                    logger.stacktrace()
+                    logger.error(e)
+            logger.info(f"ntfy Connection {'Failed' if self.NtfyFactory is None else 'Successful'}")
+        else:
+            logger.info("ntfy attribute not found")
+
         self.webhooks = {
             "error": check_for_attribute(self.data, "error", parent="webhooks", var_type="list", default_is_none=True),
             "version": check_for_attribute(self.data, "version", parent="webhooks", var_type="list", default_is_none=True),
@@ -580,7 +635,7 @@ class ConfigFile:
             "changes": check_for_attribute(self.data, "changes", parent="webhooks", var_type="list", default_is_none=True),
             "delete": check_for_attribute(self.data, "delete", parent="webhooks", var_type="list", default_is_none=True)
         }
-        self.Webhooks = Webhooks(self, self.webhooks, notifiarr=self.NotifiarrFactory, gotify=self.GotifyFactory)
+        self.Webhooks = Webhooks(self, self.webhooks, notifiarr=self.NotifiarrFactory, gotify=self.GotifyFactory, ntfy=self.NtfyFactory)
         try:
             self.Webhooks.start_time_hooks(self.start_time)
             if self.Requests.has_new_version():
@@ -844,6 +899,7 @@ class ConfigFile:
                 params["show_unmanaged"] = check_for_attribute(lib, "show_unmanaged", parent="settings", var_type="bool", default=self.general["show_unmanaged"], do_print=False, save=False)
                 params["show_unconfigured"] = check_for_attribute(lib, "show_unconfigured", parent="settings", var_type="bool", default=self.general["show_unconfigured"], do_print=False, save=False)
                 params["show_filtered"] = check_for_attribute(lib, "show_filtered", parent="settings", var_type="bool", default=self.general["show_filtered"], do_print=False, save=False)
+                params["show_unfiltered"] = check_for_attribute(lib, "show_unfiltered", parent="settings", var_type="bool", default=self.general["show_unfiltered"], do_print=False, save=False)
                 params["show_options"] = check_for_attribute(lib, "show_options", parent="settings", var_type="bool", default=self.general["show_options"], do_print=False, save=False)
                 params["show_missing"] = check_for_attribute(lib, "show_missing", parent="settings", var_type="bool", default=self.general["show_missing"], do_print=False, save=False)
                 params["show_missing_assets"] = check_for_attribute(lib, "show_missing_assets", parent="settings", var_type="bool", default=self.general["show_missing_assets"], do_print=False, save=False)
@@ -943,13 +999,15 @@ class ConfigFile:
                                         "source": check_for_attribute(input_dict, "source", test_list=mass_image_options, default_is_none=True, save=False),
                                         "seasons": check_for_attribute(input_dict, "seasons", var_type="bool", default=True, save=False),
                                         "episodes": check_for_attribute(input_dict, "episodes", var_type="bool", default=True, save=False),
+                                        "ignore_locked": check_for_attribute(input_dict, "ignore_locked", var_type="bool", default=False, save=False),
+                                        "ignore_overlays": check_for_attribute(input_dict, "ignore_overlays", var_type="bool", default=False, save=False)
                                     }
                                 elif op == "metadata_backup":
                                     default_path = os.path.join(default_dir, f"{str(library_name)}_Metadata_Backup.yml")
                                     if "path" not in input_dict:
-                                        logger.warning(f"Config Warning: path attribute not found using default: {default_path}")
+                                        logger.warning(f"Config Warning: path attribute not found. Using the default value: {default_path}")
                                     elif "path" in input_dict and not input_dict["path"]:
-                                        logger.warning(f"Config Warning: path attribute blank using default: {default_path}")
+                                        logger.warning(f"Config Warning: path attribute not found. Using the default value: {default_path}")
                                     else:
                                         default_path = input_dict["path"]
                                     section_final[op] = {
@@ -972,6 +1030,7 @@ class ConfigFile:
                                         "managed": check_for_attribute(input_dict, "managed", var_type="bool", default_is_none=True, save=False),
                                         "configured": check_for_attribute(input_dict, "configured", var_type="bool", default_is_none=True, save=False),
                                         "less": check_for_attribute(input_dict, "less", var_type="int", default_is_none=True, save=False, int_min=1),
+                                        "ignore_empty_smart_collections": check_for_attribute(input_dict, "ignore_empty_smart_collections", var_type="bool", default=True, save=False),
                                     }
                                 elif op == "mass_collection_content_rating_update":
                                     section_final[op] = {

@@ -442,6 +442,8 @@ watchlist_sorts = {
     "critic_rating.asc": "rating:asc", "critic_rating.desc": "rating:desc",
 }
 
+MAX_IMAGE_SIZE = 10480000  # a little less than 10MB
+
 class Plex(Library):
     def __init__(self, config, params):
         super().__init__(config, params)
@@ -766,6 +768,13 @@ class Plex(Library):
                 item_list.append(item)
         return item_list
 
+    def validate_image_size(self, image):
+        if image.compare < MAX_IMAGE_SIZE:
+            return True
+        else:
+            logger.error(f"Image too large: {image.location}, bytes {image.compare}, MAX {MAX_IMAGE_SIZE}")
+            return False
+
     @retry(stop=stop_after_attempt(6), wait=wait_fixed(10), retry=retry_if_not_exception_type((BadRequest, NotFound, Unauthorized)))
     def reload(self, item, force=False):
         is_full = False
@@ -789,6 +798,7 @@ class Plex(Library):
 
     @retry(stop=stop_after_attempt(6), wait=wait_fixed(10), retry=retry_if_not_exception_type((BadRequest, NotFound, Unauthorized)))
     def _upload_image(self, item, image):
+        upload_success = True
         try:
             if image.is_url and "theposterdb.com" in image.location:
                 now = datetime.now()
@@ -800,12 +810,17 @@ class Plex(Library):
             if image.is_poster and image.is_url:
                 item.uploadPoster(url=image.location)
             elif image.is_poster:
-                item.uploadPoster(filepath=image.location)
+                upload_success = self.validate_image_size(image)
+                if upload_success:
+                    item.uploadPoster(filepath=image.location)
             elif image.is_url:
                 item.uploadArt(url=image.location)
             else:
-                item.uploadArt(filepath=image.location)
+                upload_success = self.validate_image_size(image)
+                if upload_success:
+                    item.uploadArt(filepath=image.location)
             self.reload(item, force=True)
+            return upload_success
         except BadRequest as e:
             item.refresh()
             raise Failed(e)
@@ -1172,7 +1187,7 @@ class Plex(Library):
             for i, item in enumerate(all_items, 1):
                 logger.ghost(f"Processing: {i}/{len(all_items)} {item.title}")
                 add_item = True
-                item = self.reload(item)
+                item = self.reload(item, force=True)
                 for collection in item.collections:
                     if str(collection.tag).lower() in collection_indexes:
                         add_item = False
@@ -1533,6 +1548,25 @@ class Plex(Library):
             imdb_id = self.get_imdb_from_map(item)
         return tmdb_id, tvdb_id, imdb_id, tmdb_show_id
 
+    def get_ratings(self, item):
+        ratings = {
+            "plex_imdb": None,
+            "plex_tmdb": None,
+            "plex_tomatoes": None,
+            "plex_tomatoesaudience": None,
+        }
+        for rating in item.ratings:
+            if rating.image.startswith("imdb://"):
+                ratings["plex_imdb"] = rating.value
+            if rating.image.startswith("themoviedb://"):
+                ratings["plex_tmdb"] = rating.value
+            if rating.image.startswith("rottentomatoes://"):
+                if rating.image.endswith("ripe") or rating.image.endswith("rotten"):
+                    ratings["plex_tomatoes"] = rating.value
+                else:
+                    ratings["plex_tomatoesaudience"] = rating.value
+        return ratings
+
     def get_locked_attributes(self, item, titles=None, year_titles=None, item_type=None):
         if not item_type:
             item_type = self.type
@@ -1643,15 +1677,15 @@ class Plex(Library):
 
         return map_key, attrs
 
-    def get_item_sort_title(self, item_to_sort, atr="titleSort"):
+    def get_item_display_title(self, item_to_sort, sort=False):
         if isinstance(item_to_sort, Album):
-            return f"{getattr(item_to_sort.artist(), atr)} Album {getattr(item_to_sort, atr)}"
+            return f"{item_to_sort.artist().titleSort if sort else item_to_sort.parentTitle} Album {item_to_sort.titleSort if sort else item_to_sort.title}"
         elif isinstance(item_to_sort, Season):
-            return f"{getattr(item_to_sort.show(), atr)} Season {item_to_sort.seasonNumber}"
+            return f"{item_to_sort.show().titleSort if sort else item_to_sort.parentTitle} Season {item_to_sort.seasonNumber}"
         elif isinstance(item_to_sort, Episode):
-            return f"{getattr(item_to_sort.show(), atr)} {item_to_sort.seasonEpisode.upper()}"
+            return f"{item_to_sort.show().titleSort if sort else item_to_sort.grandparentTitle} {item_to_sort.seasonEpisode.upper()}"
         else:
-            return getattr(item_to_sort, atr)
+            return item_to_sort.titleSort if sort else item_to_sort.title
 
     def split(self, text):
         attribute, modifier = os.path.splitext(str(text).lower())

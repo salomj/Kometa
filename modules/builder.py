@@ -37,7 +37,7 @@ summary_details = [
 poster_details = ["url_poster", "tmdb_poster", "tmdb_profile", "tvdb_poster", "file_poster"]
 background_details = ["url_background", "tmdb_background", "tvdb_background", "file_background"]
 boolean_details = [
-    "show_filtered", "show_missing", "save_report", "missing_only_released", "only_filter_missing",
+    "show_filtered", "show_unfiltered", "show_missing", "save_report", "missing_only_released", "only_filter_missing",
     "delete_below_minimum", "asset_folders", "create_asset_folders"
 ]
 scheduled_boolean = ["visible_library", "visible_home", "visible_shared"]
@@ -47,7 +47,7 @@ ignored_details = [
     "delete_not_scheduled", "tmdb_person", "build_collection", "collection_order", "builder_level", "overlay", "kometa_poster",
     "validate_builders", "libraries", "sync_to_users", "exclude_users", "collection_name", "playlist_name", "name", "limit",
     "blank_collection", "allowed_library_types", "run_definition", "delete_playlist", "ignore_blank_results", "only_run_on_create",
-    "delete_collections_named", "tmdb_person_offset", "append_label", "key_name", "translation_key", "translation_prefix", "tmdb_birthday"
+    "delete_collections_named", "tmdb_person_offset", "append_label", "key_name", "translation_key", "translation_prefix", "tmdb_birthday", "tmdb_deathday"
 ]
 details = [
     "ignore_ids", "ignore_imdb_ids", "server_preroll", "changes_webhooks", "collection_filtering", "collection_mode", "url_theme",
@@ -59,7 +59,7 @@ item_false_details = ["item_lock_background", "item_lock_poster", "item_lock_tit
 item_bool_details = ["item_tmdb_season_titles", "revert_overlay", "item_assets", "item_refresh", "item_analyze"] + item_false_details
 item_details = ["non_item_remove_label", "item_label", "item_genre", "item_edition", "item_radarr_tag", "item_sonarr_tag", "item_refresh_delay"] + item_bool_details + list(plex.item_advance_keys.keys())
 none_details = ["label.sync", "item_label.sync", "item_genre.sync", "radarr_taglist", "sonarr_taglist", "item_edition"]
-none_builders = ["radarr_tag_list", "sonarr_taglist"]
+none_builders = ["radarr_taglist", "sonarr_taglist"]
 radarr_details = [
     "radarr_add_missing", "radarr_add_existing", "radarr_upgrade_existing", "radarr_monitor_existing", "radarr_folder", "radarr_monitor",
     "radarr_search", "radarr_availability", "radarr_quality", "radarr_tag", "item_radarr_tag", "radarr_ignore_cache",
@@ -143,7 +143,7 @@ float_attributes = plex.float_attributes + ["aspect", "tmdb_vote_average"]
 boolean_attributes = plex.boolean_attributes + boolean_filters
 smart_invalid = ["collection_order", "builder_level"]
 smart_only = ["collection_filtering"]
-smart_url_invalid = ["filters", "run_again", "sync_mode", "show_filtered", "show_missing", "save_report", "smart_label"] + radarr_details + sonarr_details
+smart_url_invalid = ["filters", "run_again", "sync_mode", "show_filtered", "show_unfiltered", "show_missing", "save_report", "smart_label"] + radarr_details + sonarr_details
 custom_sort_builders = [
     "plex_search", "plex_watchlist", "plex_pilots", "tmdb_list", "tmdb_popular", "tmdb_now_playing", "tmdb_top_rated",
     "tmdb_trending_daily", "tmdb_trending_weekly", "tmdb_discover", "reciperr_list", "trakt_chart", "trakt_userlist",
@@ -169,10 +169,10 @@ parts_collection_valid = [
      "filters", "plex_all", "plex_search", "trakt_list", "trakt_list_details", "collection_filtering", "collection_mode", "label", "visible_library", "limit",
      "visible_home", "visible_shared", "show_missing", "save_report", "missing_only_released", "server_preroll", "changes_webhooks",
      "item_lock_background", "item_lock_poster", "item_lock_title", "item_refresh", "item_refresh_delay", "imdb_list", "imdb_search",
-     "cache_builders", "url_theme", "file_theme", "item_label", "default_percent", "non_item_remove_label", "item_analyze"
+     "cache_builders", "url_theme", "file_theme", "item_label", "default_percent", "non_item_remove_label", "item_analyze", "sync_to_trakt_list"
 ] + episode_parts_only + summary_details + poster_details + background_details + string_details
 playlist_attributes = [
-    "filters", "name_mapping", "show_filtered", "show_missing", "save_report", "allowed_library_types", "run_definition",
+    "filters", "name_mapping", "show_filtered", "show_unfiltered", "show_missing", "save_report", "allowed_library_types", "run_definition",
     "missing_only_released", "only_filter_missing", "delete_below_minimum", "ignore_ids", "ignore_imdb_ids",
     "server_preroll", "changes_webhooks", "minimum_items", "cache_builders", "default_percent"
 ] + custom_sort_builders + summary_details + poster_details + radarr_details + sonarr_details
@@ -519,7 +519,7 @@ class CollectionBuilder:
                 self.sync_to_users = self.data[methods[s_attr]]
             else:
                 self.sync_to_users = config.general["playlist_sync_to_users"]
-                logger.warning(f"Playlist Warning: sync_to_users attribute not found defaulting to playlist_sync_to_users: {self.sync_to_users}")
+                logger.info(f"Playlist Warning: sync_to_users attribute not found defaulting to playlist_sync_to_users: {self.sync_to_users}")
 
             if "exclude_users" in methods or "exclude_user" in methods:
                 s_attr = f"exclude_user{'s' if 'exclude_users' in methods else ''}"
@@ -529,7 +529,7 @@ class CollectionBuilder:
                 self.exclude_users = self.data[methods[s_attr]]
             elif config.general["playlist_exclude_users"]:
                 self.exclude_users = config.general["playlist_exclude_users"]
-                logger.warning(f"Playlist Warning: exclude_users attribute not found defaulting to playlist_exclude_users: {self.exclude_users}")
+                logger.info(f"Playlist Warning: exclude_users attribute not found defaulting to playlist_exclude_users: {self.exclude_users}")
 
             plex_users = self.library.users + [self.library.account.username]
 
@@ -569,6 +569,7 @@ class CollectionBuilder:
         self.language = self.library.Plex.language
         self.details = {
             "show_filtered": self.library.show_filtered,
+            "show_unfiltered": self.library.show_unfiltered,
             "show_options": self.library.show_options,
             "show_missing": self.library.show_missing,
             "save_report": self.library.save_report,
@@ -785,8 +786,25 @@ class CollectionBuilder:
                 "this_month": util.parse(self.Type, "this_month", parsed_birthday, datatype="bool", methods=parsed_methods, default=False)
             }
 
+        self.tmdb_deathday = None
+        if "tmdb_deathday" in methods:
+            logger.debug("")
+            logger.debug("Validating Method: tmdb_deathday")
+            logger.debug(f"Value: {data[methods['tmdb_deathday']]}")
+            if not self.data[methods["tmdb_deathday"]]:
+                raise Failed(f"{self.Type} Error: tmdb_deathday attribute is blank")
+            parsed_deathday = util.parse(self.Type, "tmdb_deathday", self.data, datatype="dict", methods=methods)
+            parsed_methods = {m.lower(): m for m in parsed_deathday}
+            self.tmdb_deathday = {
+                "before": util.parse(self.Type, "before", parsed_deathday, datatype="int", methods=parsed_methods, minimum=0, default=0),
+                "after": util.parse(self.Type, "after", parsed_deathday, datatype="int", methods=parsed_methods, minimum=0, default=0),
+                "this_month": util.parse(self.Type, "this_month", parsed_deathday, datatype="bool", methods=parsed_methods, default=False)
+            }
+
+
         first_person = None
         self.tmdb_person_birthday = None
+        self.tmdb_person_deathday = None
         if "tmdb_person" in methods:
             logger.debug("")
             logger.debug("Validating Method: tmdb_person")
@@ -799,7 +817,15 @@ class CollectionBuilder:
                     try:
                         if not first_person:
                             first_person = tmdb_person
-                        person = self.config.TMDb.get_person(util.regex_first_int(tmdb_person, "TMDb Person ID"))
+                        # Added logic to allow names like "50 Cent" to be passed as a string rather than it passing "50" as the ID to use.
+                        if tmdb_person.isdigit():
+                            person = self.config.TMDb.get_person(int(tmdb_person))
+                        else:
+                            results = self.config.TMDb.search_people(tmdb_person)
+                            if not results:
+                                raise Failed(f"TMDb Error: No results for '{tmdb_person}'")
+                            result_index = len(results) - 1 if self.tmdb_person_offset >= len(results) else self.tmdb_person_offset
+                            person = results[result_index]
                         valid_names.append(person.name)
                         if person.biography:
                             self.summaries["tmdb_person"] = person.biography
@@ -807,6 +833,8 @@ class CollectionBuilder:
                             self.posters["tmdb_person"] = person.profile_url
                         if person.birthday and not self.tmdb_person_birthday:
                             self.tmdb_person_birthday = person.birthday
+                        if person.deathday and not self.tmdb_person_deathday:
+                            self.tmdb_person_deathday = person.deathday
                     except Failed as e:
                         if str(e).startswith("TMDb Error"):
                             logger.error(e)
@@ -822,6 +850,8 @@ class CollectionBuilder:
                                         self.posters["tmdb_person"] = results[result_index].profile_url
                                     if results[result_index].birthday and not self.tmdb_person_birthday:
                                         self.tmdb_person_birthday = results[result_index].birthday
+                                    if results[result_index].deathday and not self.tmdb_person_deathday:
+                                        self.tmdb_person_deathday = results[result_index].deathday
                             except Failed as ee:
                                 logger.error(ee)
                 if len(valid_names) > 0:
@@ -829,49 +859,52 @@ class CollectionBuilder:
                 else:
                     raise Failed(f"{self.Type} Error: No valid TMDb Person IDs in {self.data[methods['tmdb_person']]}")
 
-        if self.tmdb_birthday:
-            if "tmdb_person" not in methods:
-                raise NotScheduled("Skipped because tmdb_person is required when using tmdb_birthday")
-            if not self.tmdb_person_birthday:
-                raise NotScheduled(f"Skipped because No Birthday was found for {first_person}")
-            now = datetime(self.current_time.year, self.current_time.month, self.current_time.day)
+        for attr in ["tmdb_birthday", "tmdb_deathday"]:
+            tmdb_day = getattr(self, attr)
+            tmdb_person_day = getattr(self, attr.replace("_", "_person_"))
+            if tmdb_day:
+                if "tmdb_person" not in methods:
+                    raise NotScheduled(f"Skipped because tmdb_person is required when using {attr}")
+                if not tmdb_person_day:
+                    raise NotScheduled(f"Skipped because No {attr[5:]} was found for {first_person}")
+                now = datetime(self.current_time.year, self.current_time.month, self.current_time.day)
 
-            try:
-                delta = datetime(now.year, self.tmdb_person_birthday.month, self.tmdb_person_birthday.day)
-            except ValueError:
-                delta = datetime(now.year, self.tmdb_person_birthday.month, 28)
+                try:
+                    delta = datetime(now.year, tmdb_person_day.month, tmdb_person_day.day)
+                except ValueError:
+                    delta = datetime(now.year, tmdb_person_day.month, 28)
 
-            before_delta = delta
-            after_delta = delta
-            if delta < now:
-                try:
-                    before_delta = datetime(now.year + 1, self.tmdb_person_birthday.month, self.tmdb_person_birthday.day)
-                except ValueError:
-                    before_delta = datetime(now.year + 1, self.tmdb_person_birthday.month, 28)
-            elif delta > now:
-                try:
-                    after_delta = datetime(now.year - 1, self.tmdb_person_birthday.month, self.tmdb_person_birthday.day)
-                except ValueError:
-                    after_delta = datetime(now.year - 1, self.tmdb_person_birthday.month, 28)
-            days_after = (now - after_delta).days
-            days_before = (before_delta - now).days
-            msg = ""
-            if self.tmdb_birthday["this_month"]:
-                if now.month != self.tmdb_person_birthday.month:
-                    msg = f"Skipped because Birthday Month: {self.tmdb_person_birthday.month} is not {now.month}"
-            elif days_before > self.tmdb_birthday["before"] and days_after > self.tmdb_birthday["after"]:
-                msg = f"Skipped because days until {self.tmdb_person_birthday.month}/{self.tmdb_person_birthday.day}: {days_before} > {self.tmdb_birthday['before']} and days after {self.tmdb_person_birthday.month}/{self.tmdb_person_birthday.day}: {days_after} > {self.tmdb_birthday['after']}"
-            if msg:
-                suffix = ""
-                if self.details["delete_not_scheduled"]:
+                before_delta = delta
+                after_delta = delta
+                if delta < now:
                     try:
-                        self.obj = self.library.get_playlist(self.name) if self.playlist else self.library.get_collection(self.name, force_search=True)
-                        logger.info(self.delete())
-                        self.deleted = True
-                        suffix = f" and was deleted"
-                    except Failed:
-                        suffix = f" and could not be found to delete"
-                raise NotScheduled(f"{msg}{suffix}")
+                        before_delta = datetime(now.year + 1, tmdb_person_day.month, tmdb_person_day.day)
+                    except ValueError:
+                        before_delta = datetime(now.year + 1, tmdb_person_day.month, 28)
+                elif delta > now:
+                    try:
+                        after_delta = datetime(now.year - 1, tmdb_person_day.month, tmdb_person_day.day)
+                    except ValueError:
+                        after_delta = datetime(now.year - 1, tmdb_person_day.month, 28)
+                days_after = (now - after_delta).days
+                days_before = (before_delta - now).days
+                msg = ""
+                if tmdb_day["this_month"]:
+                    if now.month != tmdb_person_day.month:
+                        msg = f"Skipped because {attr[5:]} Month: {tmdb_person_day.month} is not {now.month}"
+                elif days_before > tmdb_day["before"] and days_after > tmdb_day["after"]:
+                    msg = f"Skipped because days until {tmdb_person_day.month}/{tmdb_person_day.day}: {days_before} > {tmdb_day['before']} and days after {tmdb_person_day.month}/{tmdb_person_day.day}: {days_after} > {tmdb_day['after']}"
+                if msg:
+                    suffix = ""
+                    if self.details["delete_not_scheduled"]:
+                        try:
+                            self.obj = self.library.get_playlist(self.name) if self.playlist else self.library.get_collection(self.name, force_search=True)
+                            logger.info(self.delete())
+                            self.deleted = True
+                            suffix = f" and was deleted"
+                        except Failed:
+                            suffix = f" and could not be found to delete"
+                    raise NotScheduled(f"{msg}{suffix}")
 
         self.smart_url = None
         self.smart_type_key = None
@@ -1246,7 +1279,10 @@ class CollectionBuilder:
         elif method_name == "default_percent":
             self.default_percent = util.parse(self.Type, method_name, method_data, datatype="int", minimum=1, maximum=100)
         elif method_name == "server_preroll":
-            self.server_preroll = util.parse(self.Type, method_name, method_data)
+            if isinstance(method_data, list):
+                self.server_preroll = ";".join([(",".join([str(v) for v in md if v]) if isinstance(md, list) else str(md)) for md in method_data if md])
+            else:
+                self.server_preroll = util.parse(self.Type, method_name, method_data)
         elif method_name == "ignore_ids":
             self.ignore_ids.extend(util.parse(self.Type, method_name, method_data, datatype="intlist"))
         elif method_name == "ignore_imdb_ids":
@@ -1344,7 +1380,7 @@ class CollectionBuilder:
         elif method_name == "radarr_tag":
             self.radarr_details["tag"] = util.get_list(method_data, lower=True)
         elif method_name == "radarr_taglist":
-            self.builders.append((method_name, util.get_list(method_data, lower=True)))
+            self.builders.append((method_name, util.get_list(method_data, lower=True, return_none=False)))
         elif method_name == "radarr_all":
             self.builders.append((method_name, True))
 
@@ -1366,7 +1402,7 @@ class CollectionBuilder:
         elif method_name == "sonarr_tag":
             self.sonarr_details["tag"] = util.get_list(method_data, lower=True)
         elif method_name == "sonarr_taglist":
-            self.builders.append((method_name, util.get_list(method_data, lower=True)))
+            self.builders.append((method_name, util.get_list(method_data, lower=True, return_none=False)))
         elif method_name == "sonarr_all":
             self.builders.append((method_name, True))
 
@@ -1465,11 +1501,11 @@ class CollectionBuilder:
 
     def _icheckmovies(self, method_name, method_data):
         if method_name.startswith("icheckmovies_list"):
-            icheckmovies_lists = self.config.ICheckMovies.validate_icheckmovies_lists(method_data, self.language)
+            icheckmovies_lists = self.config.ICheckMovies.validate_icheckmovies_lists(method_data)
             for icheckmovies_list in icheckmovies_lists:
                 self.builders.append(("icheckmovies_list", icheckmovies_list))
             if method_name.endswith("_details"):
-                self.summaries[method_name] = self.config.ICheckMovies.get_list_description(icheckmovies_lists[0], self.language)
+                self.summaries[method_name] = self.config.ICheckMovies.get_list_description(icheckmovies_lists[0])
 
     def _imdb(self, method_name, method_data):
         if method_name == "imdb_id":
@@ -1501,11 +1537,27 @@ class CollectionBuilder:
                     raise Failed(f"{self.Type} Error: imdb_award event_year attribute is blank")
                 if og_year in ["all", "latest"]:
                     event_year = og_year
-                elif not isinstance(og_year, list) and "-" in str(og_year) and len(str(og_year)) > 7:
+                elif not isinstance(og_year, list) and "-" in str(og_year)[1:] and (len(str(og_year)) > 6 or str(og_year).startswith("-") or "--" in str(og_year)):
                     try:
+                        first_neg = False
+                        second_neg = False
+                        if str(og_year)[0] == "-":
+                            first_neg = True
+                            og_year = str(og_year)[1:]
+                        if "--" in str(og_year):
+                            second_neg = True
+                            og_year = str(og_year).replace("--", "-")
                         min_year, max_year = og_year.split("-")
-                        min_year = int(min_year)
-                        max_year = int(max_year) if max_year != "current" else None
+                        if first_neg:
+                            min_year = self.current_year - int(min_year)
+                        else:
+                            min_year = int(min_year)
+                        if second_neg:
+                            max_year = self.current_year - int(max_year)
+                        elif max_year == "current":
+                            max_year = None
+                        else:
+                            max_year = int(max_year)
                         event_year = []
                         for option in year_options:
                             check = int(option.split("-")[0] if "-" in option else option)
@@ -1513,6 +1565,10 @@ class CollectionBuilder:
                                 event_year.append(option)
                     except ValueError:
                         raise Failed(f"{self.Type} Error: imdb_award event_year attribute invalid: {og_year}")
+                elif str(og_year).startswith("-"):
+                    event_year = str(self.current_year + int(og_year))
+                    if event_year not in year_options:
+                        raise Failed(f"{self.Type} Error: imdb_award event_year attribute not an option: {event_year}. Event Options: [{', '.join(year_options)}]")
                 else:
                     event_year = util.parse(self.Type, "event_year", og_year, parent=method_name, datatype="strlist", options=year_options)
                 if (event_year == "all" or len(event_year) > 1) and not git_event:
@@ -1587,6 +1643,19 @@ class CollectionBuilder:
                                     raise Failed(f"{method_name} {search_method} attribute: {search_data} must match pattern ev\\d+ e.g. ev0000292 or be one of {', '.join([e for e in imdb.event_options])}")
                         if events:
                             new_dictionary[lower_method] = events
+                    elif search_attr == "interests":
+                        interests = []
+                        for interest in util.parse(self.Type, search_method, search_data, datatype="lowerlist", parent=method_name):
+                            if interest in imdb.interest_options:
+                                interests.append(interest)
+                            else:
+                                res = re.search(r'(in\d+)', interest)
+                                if res:
+                                    interests.append(res.group(1))
+                                else:
+                                    raise Failed(f"{method_name} {search_method} attribute: {search_data} must match pattern ev\\d+ e.g. in0000092 or be one of {', '.join([e for e in imdb.interest_options])}")
+                        if interests:
+                            new_dictionary[lower_method] = interests
                     elif search_attr == "company":
                         companies = []
                         for company in util.parse(self.Type, search_method, search_data, datatype="lowerlist", parent=method_name):
@@ -1629,7 +1698,7 @@ class CollectionBuilder:
                                 countries.append(str(country))
                         if countries:
                             new_dictionary[lower_method] = countries
-                    elif search_attr in ["keyword", "language", "alternate_version", "crazy_credit", "location", "goof", "plot", "quote", "soundtrack", "trivia"]:
+                    elif search_attr in ["keyword", "language", "alternate_version", "crazy_credit", "location", "goof", "plot", "quote", "soundtrack", "trivia", "character"]:
                         new_dictionary[lower_method] = util.parse(self.Type, search_method, search_data, datatype="lowerlist", parent=method_name)
                     elif search_attr == "cast":
                         casts = []
@@ -1880,7 +1949,7 @@ class CollectionBuilder:
                             except ValueError:
                                 raise Failed(f"{self.Type} Error: {method_name} range_data attribute invalid: {og_data}")
                         else:
-                            _v = util.parse(self.Type, "range_data", dict_data, methods=dict_methods, parent=method_name, default="current", options=["current"] + util.lower_months)
+                            _v = util.parse(self.Type, "range_data", dict_data, methods=dict_methods, parent=method_name, default="current", options=["current"] + [k for k in util.lower_months])
                             final["range_data"] = chart_date.month if _v == "current" else util.lower_months[_v]
                     elif final["range"] == "quarterly":
                         if str(og_data).startswith("current-"):
@@ -2189,7 +2258,7 @@ class CollectionBuilder:
         elif "imdb" in method:
             ids = self.config.IMDb.get_imdb_ids(method, value, self.language)
         elif "icheckmovies" in method:
-            ids = self.config.ICheckMovies.get_imdb_ids(method, value, self.language)
+            ids = self.config.ICheckMovies.get_imdb_ids(method, value)
         elif "letterboxd" in method:
             ids = self.config.Letterboxd.get_tmdb_ids(method, value, self.language)
         elif "reciperr" in method or "stevenlu" in method:
@@ -2418,7 +2487,7 @@ class CollectionBuilder:
         name = self.obj.title if self.obj else self.name
         total = len(items)
         max_length = len(str(total))
-        if self.filters and self.details["show_filtered"] is True:
+        if self.filters and (self.details["show_filtered"] is True or self.details["show_unfiltered"] is True):
             logger.info("")
             logger.info("Filtering Builders:")
         filtered_items = []
@@ -2434,6 +2503,8 @@ class CollectionBuilder:
                     current_title = util.item_title(item)
                     if self.check_filters(item, f"{(' ' * (max_length - len(str(i))))}{i}/{total}"):
                         self.found_items.append(item)
+                        if self.details["show_unfiltered"] is True:
+                            logger.info(f"{name} {self.Type} | = | {current_title}")
                     else:
                         filtered_items.append(item)
                         self.filtered_keys[item.ratingKey] = current_title
@@ -3028,7 +3099,7 @@ class CollectionBuilder:
     def run_missing(self):
         added_to_radarr = 0
         added_to_sonarr = 0
-        if len(self.missing_movies) > 0:
+        if len(self.missing_movies) > 0 and self.library.is_movie:
             if self.details["show_missing"] is True:
                 logger.info("")
                 logger.separator(f"Missing Movies from Library: {self.library.name}", space=False, border=False)

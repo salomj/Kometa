@@ -1,4 +1,4 @@
-import base64, os, ruamel.yaml, requests
+import base64, cloudscraper, os, ruamel.yaml, requests
 from lxml import html
 from modules import util
 from modules.poster import ImageData
@@ -71,6 +71,7 @@ class Requests:
         self._latest = None
         self._newest = None
         self.session = self.create_session()
+        self.scraper = cloudscraper.create_scraper()
         self.global_ssl = verify_ssl
         if not self.global_ssl:
             self.no_verify_ssl()
@@ -140,6 +141,9 @@ class Requests:
                     f.write(chunk)
                     logger.ghost(f"Downloading {info}: {dl / total_length * 100:6.2f}%")
                 logger.exorcise()
+
+    def get_scrape_html(self, url):
+        html.fromstring(self.scraper.get(url).content)
 
     def get_html(self, url, headers=None, params=None, header=None, language=None):
         return html.fromstring(self.get(url, headers=headers, params=params, header=header, language=language).content)
@@ -259,7 +263,12 @@ class YAML:
                     with open(self.path, encoding="utf-8") as fp:
                         self.data = self.yaml.load(fp)
         except ruamel.yaml.error.YAMLError as e:
-            e = str(e).replace("\n", "\n      ")
+            if "found character '\\t' that cannot start any token" in e.problem:
+                location = f"{e.args[3].name}; line {e.args[3].line + 1} column {e.args[3].column + 1}"
+                e = f"Tabs are not allowed in YAML files; only spaces are allowed.\nfirst tab character found at:\n{location}"
+            else:
+                e = str(e).replace("\n", "\n      ")
+            
             raise Failed(f"YAML Error: {e}")
         except Exception as e:
             raise Failed(f"YAML Error: {e}")

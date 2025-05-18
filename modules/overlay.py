@@ -13,31 +13,57 @@ landscape_dim = (1920, 1080)
 square_dim = (1000, 1000)
 old_special_text = [f"{a}{s}" for a in ["audience_rating", "critic_rating", "user_rating"] for s in ["", "0", "%", "#"]]
 rating_sources = [
-    "tmdb_rating", "imdb_rating", "trakt_user_rating", "omdb_rating", "mdb_rating", "mdb_average_rating",
-    "mdb_imdb_rating", "mdb_metacritic_rating", "mdb_metacriticuser_rating", "mdb_trakt_rating", "mdb_tomatoes_rating",
-    "mdb_tomatoesaudience_rating", "mdb_tmdb_rating", "mdb_letterboxd_rating", "mdb_myanimelist_rating",
-    "anidb_rating", "anidb_average_rating", "anidb_score_rating", "mal_rating"
+    "anidb_average_rating",
+    "anidb_rating",
+    "anidb_score_rating",
+    "imdb_rating",
+    "mal_rating",
+    "mdb_average_rating",
+    "mdb_imdb_rating",
+    "mdb_letterboxd_rating",
+    "mdb_metacritic_rating",
+    "mdb_metacriticuser_rating",
+    "mdb_myanimelist_rating",
+    "mdb_rating",
+    "mdb_tmdb_rating",
+    "mdb_tomatoes_rating",
+    "mdb_tomatoesaudience_rating",
+    "mdb_trakt_rating",
+    "omdb_rating",
+    "omdb_imdb_rating",
+    "omdb_metascore_rating",
+    "omdb_tomatoes_rating",
+    "plex_imdb_rating",
+    "plex_tmdb_rating",
+    "plex_tomatoes_rating",
+    "plex_tomatoesaudience_rating",
+    "tmdb_rating",
+    "trakt_rating",
+    "trakt_user_rating"
 ]
 float_vars = ["audience_rating", "critic_rating", "user_rating"] + rating_sources
 int_vars = ["runtime", "total_runtime", "season_number", "episode_number", "episode_count", "versions"]
 date_vars = ["originally_available"]
 types_for_var = {
-    "movie_show_season_episode_artist_album": ["runtime", "user_rating", "title"],
+    "movie_show_season_episode_artist_album": ["runtime", "title", "user_rating"],
     "movie_show_episode_album": ["critic_rating", "originally_available"],
-    "movie_show_season_episode": ["tmdb_rating"],
-    "show_season_artist_album": ["total_runtime"],
-    "movie_show_episode": ["audience_rating", "content_rating", "tmdb_rating", "imdb_rating"],
-    "movie_show": [
-        "original_title", "trakt_user_rating", "omdb_rating", "mdb_rating", "mdb_average_rating", "mdb_imdb_rating",
-        "mdb_metacritic_rating", "mdb_metacriticuser_rating", "mdb_trakt_rating", "mdb_tomatoes_rating",
-        "mdb_tomatoesaudience_rating", "mdb_tmdb_rating", "mdb_letterboxd_rating", "mdb_myanimelist_rating",
-        "anidb_rating", "anidb_average_rating", "anidb_score_rating", "mal_rating"
+    "movie_show_season_episode": [
+        "imdb_rating", "mdb_average_rating", "mdb_imdb_rating", "mdb_letterboxd_rating",
+        "mdb_metacritic_rating", "mdb_metacriticuser_rating", "mdb_rating",
+        "mdb_tmdb_rating", "mdb_tomatoes_rating", "mdb_tomatoesaudience_rating",
+        "mdb_trakt_rating", "mdb_myanimelist_rating", "omdb_rating", "omdb_imdb_rating", "tmdb_rating",
+        "omdb_metascore_rating", "omdb_tomatoes_rating", "plex_imdb_rating", "plex_tmdb_rating",
+        "plex_tomatoes_rating", "plex_tomatoesaudience_rating", "trakt_rating",
     ],
-    "movie_episode": ["versions", "bitrate"],
-    "season_episode": ["show_title", "season_number"],
+    "movie_show_season": ["original_title", "trakt_user_rating"],
+    "show_season_artist_album": ["total_runtime"],
+    "movie_show_episode": ["audience_rating", "content_rating"],
+    "movie_show": ["anidb_average_rating", "anidb_rating", "anidb_score_rating", "mal_rating"],
+    "movie_episode": ["bitrate", "versions"],
+    "season_episode": ["season_number", "show_title"],
     "show_season": ["episode_count"],
     "movie": ["edition"],
-    "episode": ["season_title", "episode_number"]
+    "episode": ["episode_number", "season_title"]
 }
 var_mods = {
     "bitrate": ["", "H", "L"],
@@ -137,6 +163,8 @@ class Overlay:
         if (self.horizontal_offset is None and self.vertical_offset is not None) or (self.vertical_offset is None and self.horizontal_offset is not None):
             raise Failed(f"Overlay Error: overlay attribute's horizontal_offset and vertical_offset must be used together")
 
+        self.scale_width, self.scale_height = util.parse_scale(self.data, "overlay")
+
         def color(attr):
             if attr in self.data and self.data[attr]:
                 try:
@@ -234,6 +262,15 @@ class Overlay:
                 self.updated = not image_compare or str(overlay_size) != str(image_compare)
                 try:
                     self.image = Image.open(self.path).convert("RGBA")
+                    if self.scale_width or self.scale_height:
+                        base_width, base_height = self.image.size
+                        width = (int(base_width * int(self.scale_width[:-1]) / 100) if str(self.scale_width)[-1] == "%" else self.scale_width) if self.scale_width else None
+                        height = (int(base_height * int(self.scale_height[:-1]) / 100) if str(self.scale_height)[-1] == "%" else self.scale_height) if self.scale_height else None
+                        if height and not width:
+                            width = int(base_width * height / base_height)
+                        if width and not height:
+                            height = int(base_height * width / base_width)
+                        self.image = self.image.resize((width, height), Image.Resampling.LANCZOS)
                     if self.cache:
                         self.cache.update_image_map(self.mapping_name, f"{self.library.image_table_name}_overlays", self.name, overlay_size)
                 except OSError:
@@ -318,6 +355,15 @@ class Overlay:
             self.updated = not image_compare or str(overlay_size) != str(image_compare)
             try:
                 self.image = Image.open(self.path).convert("RGBA")
+                if self.scale_width or self.scale_height:
+                    base_width, base_height = self.image.size
+                    width = (int(base_width * int(self.scale_width[:-1]) / 100) if str(self.scale_width)[-1] == "%" else self.scale_width) if self.scale_width else None
+                    height = (int(base_height * int(self.scale_height[:-1]) / 100) if str(self.scale_height)[-1] == "%" else self.scale_height) if self.scale_height else None
+                    if height and not width:
+                        width = int(base_width * height / base_height)
+                    if width and not height:
+                        height = int(base_height * width / base_width)
+                    self.image = self.image.resize((width, height), Image.Resampling.LANCZOS)
                 if self.has_coordinates():
                     self.backdrop_box = self.image.size
                 if self.cache:
@@ -411,8 +457,8 @@ class Overlay:
             output += f"{self.back_box[0]}{self.back_box[1]}{self.back_align}"
         if self.addon_position is not None:
             output += f"{self.addon_position}{self.addon_offset}"
-        for value in [self.font_color, self.back_color, self.back_radius, self.back_padding,
-                      self.back_line_color, self.back_line_width, self.stroke_color, self.stroke_width]:
+        for value in [self.font_color, self.back_color, self.back_radius, self.back_padding, self.back_line_color,
+                      self.back_line_width, self.stroke_color, self.stroke_width, self.scale_width, self.scale_height]:
             if value is not None:
                 output += f"{value}"
         return output

@@ -17,15 +17,17 @@ templates:
       - use_<<tmdb_key>>
       - allowed_libraries
       - originals_only
+      - delete_collections_named
     conditionals:
+
       discover_sort:
         conditions:
           - originals_only: false
             library_type: movie
-            value: primary_release_date.desc
+            value: popularity.desc
           - originals_only: false
             library_type: show
-            value: first_air_date.desc
+            value: popularity.desc
       originals:
         conditions:
           - originals_only: true
@@ -37,9 +39,10 @@ templates:
       final_tmdb_key:
         default: <<tmdb_key>>
         conditions:
-          - region: CA
+          - region: [CA, AU, NL]
             tmdb_key: [9]
             value: 119
+
       discover_with:
         conditions:
           - originals_only: false
@@ -48,17 +51,13 @@ templates:
         conditions:
           - originals_only: false
             value: 0
-      discover_count:
-        conditions:
-          - originals_only: false
-            value: 100
       allowed_streaming:
         conditions:
           - originals_only: true
-            tmdb_key: [103, 1759, 151, 230, 283, 510, 39, 37, 188]
+            tmdb_key: [103, 1759, 41, 2300, 230, 283, 510, 39, 37, 188]
             value: False
           - region.not: GB
-            tmdb_key: [103, 151, 39]
+            tmdb_key: [103, 41, 2300, 39]
             value: False
           - region.not: CA
             tmdb_key: [230]
@@ -71,8 +70,10 @@ templates:
       limit: "500"
       sync_mode: sync
       sync_mode_<<key>>: <<sync_mode>>
+      discover_with_<<key>>: <<discover_with>>
       sort_by: release.desc
       sort_by_<<key>>: <<sort_by>>
+      delete_collections_named_<<key>>: <<delete_collections_named>>
     run_definition:
       - <<use_<<key>>>>
       - <<use_<<tmdb_key>>>>
@@ -82,11 +83,11 @@ templates:
     smart_label: <<sort_by_<<key>>>>
     sync_mode: <<sync_mode_<<key>>>>
     mdblist_list: https://mdblist.com/lists/k0meta/<<key>>-<<originals>>
+    delete_collections_named: <<delete_collections_named_<<key>>>>
     limit: <<limit>>
     tmdb_discover:
       limit: <<discover_limit>>
-      with_watch_providers: <<discover_with>>
-      vote_count.gte: <<discover_count>>
+      with_watch_providers: <<discover_with_<<key>>>>
       watch_region: <<discover_region>>
       sort_by: <<discover_sort>>
 
@@ -102,14 +103,14 @@ dynamic_collections:
   Streaming:
     type: custom
     data:
-      all4: All 4
+      channel4: Channel 4
       appletv: Apple TV+
       bet: BET+
-      britbox: BritBox
       crave: Crave
       crunchyroll: Crunchyroll
       discovery: discovery+
       disney: Disney+
+      itvx: ITVX
       max: Max
       hayu: hayu
       hulu: Hulu
@@ -118,7 +119,6 @@ dynamic_collections:
       paramount: Paramount+
       peacock: Peacock
       amazon: Prime Video
-      showtime: Showtime
       youtube: YouTube
     title_format: <<key_name>> <<library_typeU>>s
     template:
@@ -127,22 +127,22 @@ dynamic_collections:
       - arr
     template_variables:
       image:
-        default: streaming/<<key_name_encoded>>
+        default: streaming/<<style>>/<<key_name_encoded>>
       tmdb_key:
-        all4: 103
+        channel4: 103
         appletv: 350
         bet: 1759
-        britbox: 151
         crave: 230
         crunchyroll: 283
         discovery: 510
         disney: 337
+        itvx: 41|2300
         max: 1899
         hayu: 223
         hulu: 15
         netflix: 8
         now: 39
-        paramount: 531
+        paramount: 531|1770
         peacock: 387
         amazon: 9
         showtime: 37
@@ -157,3 +157,15 @@ dynamic_collections:
         default: streaming
       dynamic:
         default: true
+      style:
+        default: color
+      delete_collections_named:
+        channel4:
+          - All 4 Movies
+          - All 4 Shows
+        paramount:
+          - Showtime Movies
+          - Showtime Shows
+        itvx:
+          - BritBox Movies
+          - BritBox Shows

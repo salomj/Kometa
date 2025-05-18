@@ -1,27 +1,27 @@
+---
+hide:
+  - toc
+---
 # Gotify Attributes
 
-Configuring [Gotify](https://gotify.net/) is optional but can allow you to send the [webhooks](webhooks.md) 
-straight to gotify.
+Configuring [Gotify](https://gotify.net/) is optional but can allow you to send the [webhooks](webhooks.md) straight to Gotify.
 
-A `gotify` mapping is in the root of the config file.
+A `gotify` mapping is in the root of the config file, sampled below.
 
-Below is a `gotify` mapping example and the full set of attributes:
-
-```yaml
+```yaml title="config.yml Goify sample"
 gotify:
-  url: ####################################
-  token: ####################################
+  url: https://mywebsite.com
+  token: thisismytoken
 ```
 
-| Attribute | Allowed Values           |                  Required                  |
-|:----------|:-------------------------|:------------------------------------------:|
-| `url`     | Gotify Server Url        | :fontawesome-solid-circle-check:{ .green } |
-| `token`   | Gotify Application Token | :fontawesome-solid-circle-check:{ .green } |
+| Attribute | Description                  | Allowed Values (default in **bold**)        | Required                                   |
+|:----------|:-----------------------------|:--------------------------------------------|:------------------------------------------:|
+| `url`     | Gotify server URL.           | Any valid URL or leave **blank**            | :fontawesome-solid-circle-check:{ .green } |
+| `token`   | Gotify application token.    | Any valid token or leave **blank**          | :fontawesome-solid-circle-check:{ .green } |
 
-Once you have added the apikey your config.yml you have to add `gotify` to any [webhook](webhooks.md) to send that 
-notification to Gotify.
+Once you have added the configuration data your config.yml you have to add `gotify` to any [webhook](webhooks.md) to send that notification to Gotify.
 
-```yaml
+```yaml title="config.yml Gotify webhooks sample"
 webhooks:
   error: gotify
   version: gotify

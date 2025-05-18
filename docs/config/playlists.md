@@ -1,16 +1,17 @@
+---
+hide:
+  - toc
+---
 # Playlist Files Attribute
 
-As playlists are not tied to one specific library and can combine media from multiple libraries, they require their own 
-special [Playlist Files](../files/playlists.md) to work.
+As playlists are not tied to one specific library and can combine media from multiple libraries, they require their own special [Playlist Files](../files/playlists.md) to work.
 
-Within the [Configuration File](overview.md), the `playlist_files` attribute specifies the 
-[File Blocks](../config/files.md#blocks) of the [Playlist Files](../files/playlists.md) that the user wants Kometa to 
-act on.
+Within the [Configuration File](overview.md), the `playlist_files` attribute specifies the [File Blocks](../config/files.md#blocks) 
+of the [Playlist Files](../files/playlists.md) that the user wants Kometa to act on.
 
-**The libraries used in the playlist attribute `libraries` must be defined under the `libraries` attribute of the 
-[Configuration File](overview.md).**
+**The libraries used in the playlist attribute `libraries` must be defined under the `libraries` attribute of the [Configuration File](overview.md).**
 
-```yaml
+```yaml title="config.yml Playlists sample"
 playlist_files:
   - file: config/playlists.yml
   - default: playlist

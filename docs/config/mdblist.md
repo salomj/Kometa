@@ -1,20 +1,23 @@
+---
+hide:
+  - toc
+---
 # MDBList Attributes
 
 Configuring [MDBList](https://mdblist.com/) is optional but can allow you to mass edit metadata.
 
-A `mdblist` mapping is in the root of the config file.
+A `mdblist` mapping is in the root of the config file, sampled below.
 
-Below is a `mdblist` mapping example and the full set of attributes:
-```yaml
+```yaml title="config.yml MDBList sample"
 mdblist:
-  apikey: #########################
+  apikey: thisismyapikey
   cache_expiration: 60
 ```
 
-| Attribute          | Allowed Values                                                            | Default |                  Required                  |
-|:-------------------|:--------------------------------------------------------------------------|:--------|:------------------------------------------:|
-| `apikey`           | MDBList API Key                                                           | N/A     | :fontawesome-solid-circle-check:{ .green } |
-| `cache_expiration` | Number of days before each cache mapping expires and has to be re-cached. | 60      |  :fontawesome-solid-circle-xmark:{ .red }  |
+| Attribute          | Description                                                                  | Allowed Values (default in **bold**)            | Required                                   |
+|:-------------------|:-----------------------------------------------------------------------------|:------------------------------------------------|:------------------------------------------:|
+| `apikey`           | MDBList API key.                                                             | Any valid key or leave **blank**                | :fontawesome-solid-circle-check:{ .green } |
+| `cache_expiration` | Days before each cache mapping expires and must be re-cached.                | Integer, e.g. **`60`**                          | :fontawesome-solid-circle-xmark:{ .red }   |
 
 ???+ tip
 

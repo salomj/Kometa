@@ -23,6 +23,8 @@ class OMDbObj:
                     return float(value)
                 elif is_date:
                     return datetime.strptime(value, "%d %b %Y")
+                elif value == "N/A":
+                    return None
                 else:
                     return value
             except (ValueError, TypeError, KeyError):
@@ -37,12 +39,21 @@ class OMDbObj:
         self.imdb_rating = _parse("imdbRating", is_float=True)
         self.imdb_votes = _parse("imdbVotes", is_int=True, replace=",")
         self.metacritic_rating = _parse("Metascore", is_int=True)
+        self.rotten_tomatoes = None
+        try:
+            for rating in data["Ratings"]:
+                if rating["Source"] == "Rotten Tomatoes":
+                    data["tempRT"] = rating["Value"] # This is a hack to allow _parse to work without changes
+                    self.rotten_tomatoes = _parse("tempRT", is_int=True, replace="%")
+                    break
+        except KeyError:
+            pass
+
         self.imdb_id = _parse("imdbID")
         self.type = _parse("Type")
         self.series_id = _parse("seriesID")
         self.season_num = _parse("Season", is_int=True)
         self.episode_num = _parse("Episode", is_int=True)
-
 
 class OMDb:
     def __init__(self, requests, cache, params):
@@ -61,7 +72,7 @@ class OMDb:
             if omdb_dict and expired is False:
                 return OMDbObj(imdb_id, omdb_dict)
         logger.trace(f"IMDb ID: {imdb_id}")
-        response = self.requests.get(base_url, params={"i": imdb_id, "apikey": self.apikey})
+        response = self.requests.get(base_url, params={"apikey": self.apikey, "i": imdb_id})
         if response.status_code < 400:
             omdb = OMDbObj(imdb_id, response.json())
             if self.cache and not ignore_cache:

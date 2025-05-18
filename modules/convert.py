@@ -72,12 +72,15 @@ class Convert:
         elif tvdb_id and int(tvdb_id) in self._tvdb_to_anidb:
             return self._tvdb_to_anidb[int(tvdb_id)]
         else:
+            tmdb_show_id = self.tvdb_to_tmdb(tvdb_id) if tvdb_id else None
             if tmdb_show_id and int(tmdb_show_id) in self._tmdb_show_to_anidb:
                 return self._tmdb_show_to_anidb[int(tmdb_show_id)]
             elif imdb_id in self._imdb_to_anidb:
                 return self._imdb_to_anidb[imdb_id]
             elif tmdb_movie_id and int(tmdb_movie_id) in self._tmdb_movie_to_anidb:
                 return self._tmdb_movie_to_anidb[int(tmdb_movie_id)]
+            elif tmdb_id and int(tmdb_id) in self._tmdb_movie_to_anidb:
+                return self._tmdb_movie_to_anidb[int(tmdb_id)]
             else:
                 return None
 

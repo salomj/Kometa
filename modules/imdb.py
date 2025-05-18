@@ -50,7 +50,8 @@ imdb_search_attributes = [
     "type", "type.not", 
     "release.after", "release.before", "rating.gte", "rating.lte",
     "votes.gte", "votes.lte", 
-    "genre", "genre.any", "genre.not", 
+    "genre", "genre.any", "genre.not",
+    "interests", "interests.any", "interests.not",
     "topic", "topic.any", "topic.not",
     "alternate_version", "alternate_version.any", "alternate_version.not", 
     "crazy_credit", "crazy_credit.any", "crazy_credit.not", 
@@ -69,7 +70,8 @@ imdb_search_attributes = [
     "series", "series.not", 
     "list", "list.any", "list.not", 
     "language", "language.any", "language.not", "language.primary", 
-    "popularity.gte", "popularity.lte", 
+    "popularity.gte", "popularity.lte",
+    "character",
     "cast", "cast.any", "cast.not", 
     "runtime.gte", "runtime.lte", 
     "adult",
@@ -84,7 +86,7 @@ sort_by_options = {
     "year": "YEAR",
     "release": "RELEASE_DATE",
 }
-sort_options = [f"{a}.{d}"for a in sort_by_options for d in ["asc", "desc"]]
+sort_options = [f"{a}.{d}" for a in sort_by_options for d in ["asc", "desc"]]
 list_sort_by_options = {
     "custom": "LIST_ORDER",
     "popularity": "POPULARITY",
@@ -95,7 +97,7 @@ list_sort_by_options = {
     "added": "DATE_ADDED",
     "release": "RELEASE_DATE",
 }
-list_sort_options = [f"{a}.{d}"for a in sort_by_options for d in ["asc", "desc"]]
+list_sort_options = [f"{a}.{d}" for a in list_sort_by_options for d in ["asc", "desc"]]
 title_type_options = {
     "movie": "movie", "tv_series": "tvSeries", "short": "short", "tv_episode": "tvEpisode", "tv_mini_series": "tvMiniSeries",
     "tv_movie": "tvMovie", "tv_special": "tvSpecial", "tv_short": "tvShort", "video_game": "videoGame", "video": "video",
@@ -106,6 +108,219 @@ genre_options = {a.lower(): a for a in [
     "News", "Short", "Western", "Sport", "Reality-TV", "Horror", "Fantasy", "Film-Noir", "Music", "Romance",
     "Talk-Show", "Thriller", "War", "Sci-Fi", "Musical", "Mystery", "Game-Show"
 ]}
+interest_options = {
+    "action": "in0000001",
+    "action_epic": "in0000002",
+    "b_action": "in0000003",
+    "car_action": "in0000004",
+    "disaster": "in0000005",
+    "martial_arts": "in0000006",
+    "one_person_army_action": "in0000007",
+    "superhero": "in0000008",
+    "sword_&_sandal": "in0000009",
+    "war": "in0000010",
+    "war_epic": "in0000011",
+    "adventure": "in0000012",
+    "desert_adventure": "in0000013",
+    "dinosaur_adventure": "in0000014",
+    "adventure_epic": "in0000015",
+    "globetrotting_adventure": "in0000016",
+    "jungle_adventure": "in0000017",
+    "mountain_adventure": "in0000018",
+    "quest": "in0000019",
+    "road_trip": "in0000020",
+    "sea_adventure": "in0000021",
+    "swashbuckler": "in0000022",
+    "teen_adventure": "in0000023",
+    "urban_adventure": "in0000024",
+    "adult_animation": "in0000025",
+    "animation": "in0000026",
+    "anime": "in0000027",
+    "computer_animation": "in0000028",
+    "hand_drawn_animation": "in0000029",
+    "stop_motion_animation": "in0000030",
+    "body_swap_comedy": "in0000031",
+    "buddy_comedy": "in0000032",
+    "buddy_cop": "in0000033",
+    "comedy": "in0000034",
+    "dark_comedy": "in0000035",
+    "farce": "in0000036",
+    "high_concept_comedy": "in0000037",
+    "mockumentary": "in0000038",
+    "parody": "in0000039",
+    "quirky_comedy": "in0000040",
+    "raunchy_comedy": "in0000041",
+    "satire": "in0000042",
+    "screwball_comedy": "in0000043",
+    "sitcom": "in0000044",
+    "sketch_comedy": "in0000045",
+    "slapstick": "in0000046",
+    "stand_up": "in0000047",
+    "stoner_comedy": "in0000048",
+    "teen_comedy": "in0000049",
+    "caper": "in0000050",
+    "cop_drama": "in0000051",
+    "crime": "in0000052",
+    "drug_crime": "in0000053",
+    "film_noir": "in0000054",
+    "gangster": "in0000055",
+    "heist": "in0000056",
+    "police_procedural": "in0000057",
+    "true_crime": "in0000058",
+    "crime_documentary": "in0000059",
+    "documentary": "in0000060",
+    "docuseries": "in0000061",
+    "faith_&_spirituality_documentary": "in0000062",
+    "food_documentary": "in0000063",
+    "history_documentary": "in0000064",
+    "military_documentary": "in0000065",
+    "music_documentary": "in0000066",
+    "nature_documentary": "in0000067",
+    "political_documentary": "in0000068",
+    "science_&_technology_documentary": "in0000069",
+    "sports_documentary": "in0000070",
+    "travel_documentary": "in0000071",
+    "biography": "in0000072",
+    "coming_of_age": "in0000073",
+    "costume_drama": "in0000074",
+    "docudrama": "in0000075",
+    "drama": "in0000076",
+    "epic": "in0000077",
+    "financial_drama": "in0000078",
+    "historical_epic": "in0000079",
+    "history": "in0000080",
+    "legal_drama": "in0000081",
+    "medical_drama": "in0000082",
+    "period_drama": "in0000083",
+    "political_drama": "in0000084",
+    "prison_drama": "in0000085",
+    "psychological_drama": "in0000086",
+    "showbiz_drama": "in0000087",
+    "soap_opera": "in0000088",
+    "teen_drama": "in0000089",
+    "tragedy": "in0000090",
+    "workplace_drama": "in0000091",
+    "animal_adventure": "in0000092",
+    "family": "in0000093",
+    "dark_fantasy": "in0000095",
+    "fantasy_epic": "in0000096",
+    "fairy_tale": "in0000097",
+    "fantasy": "in0000098",
+    "supernatural_fantasy": "in0000099",
+    "sword_&_sorcery": "in0000100",
+    "teen_fantasy": "in0000101",
+    "beauty_competition": "in0000102",
+    "cooking_competition": "in0000103",
+    "quiz_show": "in0000104",
+    "game_show": "in0000105",
+    "survival_competition": "in0000106",
+    "talent_competition": "in0000107",
+    "b_horror": "in0000108",
+    "body_horror": "in0000109",
+    "folk_horror": "in0000110",
+    "found_footage_horror": "in0000111",
+    "horror": "in0000112",
+    "monster_horror": "in0000113",
+    "psychological_horror": "in0000114",
+    "slasher_horror": "in0000115",
+    "splatter_horror": "in0000116",
+    "supernatural_horror": "in0000117",
+    "teen_horror": "in0000118",
+    "vampire_horror": "in0000119",
+    "werewolf_horror": "in0000120",
+    "witch_horror": "in0000121",
+    "zombie_horror": "in0000122",
+    "beauty_makeover": "in0000123",
+    "cooking_&_food": "in0000124",
+    "home_improvement": "in0000125",
+    "lifestyle": "in0000126",
+    "talk_show": "in0000127",
+    "travel": "in0000128",
+    "concert": "in0000129",
+    "music": "in0000130",
+    "classic_musical": "in0000131",
+    "jukebox_musical": "in0000132",
+    "musical": "in0000133",
+    "pop_musical": "in0000134",
+    "rock_musical": "in0000135",
+    "bumbling_detective": "in0000136",
+    "cozy_mystery": "in0000137",
+    "hard_boiled_detective": "in0000138",
+    "mystery": "in0000139",
+    "suspense_mystery": "in0000140",
+    "whodunnit": "in0000141",
+    "business_reality_tv": "in0000142",
+    "crime_reality_tv": "in0000143",
+    "dating_reality_tv": "in0000144",
+    "docusoap_reality_tv": "in0000145",
+    "hidden_camera": "in0000146",
+    "paranormal_reality_tv": "in0000147",
+    "reality_tv": "in0000148",
+    "dark_romance": "in0000149",
+    "romantic_epic": "in0000150",
+    "feel_good_romance": "in0000151",
+    "romance": "in0000152",
+    "romantic_comedy": "in0000153",
+    "steamy_romance": "in0000154",
+    "teen_romance": "in0000155",
+    "tragic_romance": "in0000156",
+    "alien_invasion": "in0000157",
+    "artificial_intelligence": "in0000158",
+    "cyberpunk": "in0000159",
+    "dystopian_sci_fi": "in0000160",
+    "kaiju": "in0000161",
+    "sci_fi": "in0000162",
+    "sci_fi_epic": "in0000163",
+    "space_sci_fi": "in0000164",
+    "steampunk": "in0000165",
+    "time_travel": "in0000166",
+    "baseball": "in0000167",
+    "basketball": "in0000168",
+    "boxing": "in0000169",
+    "extreme_sport": "in0000170",
+    "football": "in0000171",
+    "motorsport": "in0000172",
+    "soccer": "in0000173",
+    "sport": "in0000174",
+    "water_sport": "in0000175",
+    "conspiracy_thriller": "in0000176",
+    "cyber_thriller": "in0000177",
+    "erotic_thriller": "in0000178",
+    "giallo": "in0000179",
+    "legal_thriller": "in0000180",
+    "political_thriller": "in0000181",
+    "psychological_thriller": "in0000182",
+    "serial_killer": "in0000183",
+    "spy": "in0000184",
+    "survival": "in0000185",
+    "thriller": "in0000186",
+    "classical_western": "in0000187",
+    "contemporary_western": "in0000188",
+    "western_epic": "in0000189",
+    "spaghetti_western": "in0000190",
+    "western": "in0000191",
+    "holiday": "in0000192",
+    "holiday_animation": "in0000193",
+    "holiday_comedy": "in0000194",
+    "holiday_family": "in0000195",
+    "holiday_romance": "in0000196",
+    "gun_fu": "in0000197",
+    "kung_fu": "in0000198",
+    "samurai": "in0000199",
+    "wuxia": "in0000200",
+    "isekai": "in0000201",
+    "iyashikei": "in0000202",
+    "josei": "in0000203",
+    "mecha": "in0000204",
+    "seinen": "in0000205",
+    "shōnen": "in0000206",
+    "shōjo": "in0000207",
+    "slice_of_life": "in0000208",
+    "korean_drama": "in0000209",
+    "telenovela": "in0000210",
+    "news": "in0000211",
+    "short": "in0000212",
+}
 topic_options = {
     "alternate_version": "ALTERNATE_VERSION",
     "award": "AWARD",
@@ -256,7 +471,7 @@ class IMDb:
                 new_dict["limit"] = 0
 
             if "sort_by" in dict_methods:
-                new_dict["sort_by"] = util.parse(err_type, dict_methods, imdb_dict, parent=method, default="custom.asc", options=list_sort_options)
+                new_dict["sort_by"] = util.parse(err_type, "sort_by", imdb_dict, methods=dict_methods, parent=method, default="custom.asc", options=list_sort_options)
 
             valid_lists.append(new_dict)
         return valid_lists
@@ -303,7 +518,7 @@ class IMDb:
             "first": data["limit"] if "limit" in data and 0 < data["limit"] < page_limit else page_limit,
         }
 
-        def check_constraint(bases, mods, constraint, lower="", translation=None, range_name=None):
+        def check_constraint(bases, mods, constraint, lower="", translation=None, range_name=None, obj_name=None):
             if not isinstance(bases, list):
                 bases = [bases]
             if range_name and not isinstance(range_name, list):
@@ -318,12 +533,14 @@ class IMDb:
                         if full_attr in data:
                             if range_name is not None:
                                 range_data[imdb_mod] = data[full_attr]
+                            elif obj_name is not None:
+                                out[constraint][f"{imdb_mod}{lower}"] = [{obj_name: d} for d in data[full_attr]]
                             elif translation is None:
                                 out[constraint][f"{imdb_mod}{lower}"] = data[full_attr]
                             elif isinstance(translation, tuple):
                                 out[constraint][f"{imdb_mod}{lower}"] = [d.replace(translation[0], translation[1]) for d in data[full_attr]]
                             elif isinstance(translation, dict):
-                                out[constraint][f"{imdb_mod}{lower}"] = [translation[d] for d in data[full_attr]]
+                                out[constraint][f"{imdb_mod}{lower}"] = [translation[d] if d in translation else d for d in data[full_attr]]
                     if range_data:
                         out[constraint][range_name[i]] = range_data
 
@@ -340,6 +557,7 @@ class IMDb:
             check_constraint("title", [("", "searchTerm")], "titleTextConstraint")
             check_constraint(["rating", "votes"], [("gte", "min"), ("lte", "max")], "userRatingsConstraint", range_name=["aggregateRatingRange", "ratingsCountRange"])
             check_constraint("genre", [("", "all"), ("any", "any"), ("not", "exclude")], "genreConstraint", lower="GenreIds", translation=genre_options)
+            check_constraint("interests", [("", "all"), ("any", "any"), ("not", "exclude")], "interestConstraint", lower="InterestIds", translation=interest_options)
             check_constraint("topic", [("", "all"), ("any", "any"), ("not", "no")], "withTitleDataConstraint", lower="DataAvailable", translation=topic_options)
             check_constraint("alternate_version", [("", "all"), ("any", "any")], "alternateVersionMatchingConstraint", lower="AlternateVersionTextTerms")
             check_constraint("crazy_credit", [("", "all"), ("any", "any")], "crazyCreditMatchingConstraint", lower="CrazyCreditTextTerms")
@@ -392,7 +610,8 @@ class IMDb:
             check_constraint("country", [("", "all"), ("any", "any"), ("not", "exclude"), ("origin", "anyPrimary")], "originCountryConstraint", lower="Countries")
             check_constraint("keyword", [("", "all"), ("any", "any"), ("not", "exclude")], "keywordConstraint", lower="Keywords", translation=(" ", "-"))
             check_constraint("language", [("", "all"), ("any", "any"), ("not", "exclude"), ("primary", "anyPrimary")], "languageConstraint", lower="Languages")
-            check_constraint("cast", [("", "all"), ("any", "any"), ("not", "exclude")], "creditedNameConstraint", lower="NameIds")
+            check_constraint("cast", [("", "all"), ("any", "any"), ("not", "exclude")], "titleCreditsConstraint", lower="Credits", obj_name="nameId")
+            check_constraint("character", [("", "any")], "characterConstraint", lower="CharacterNames")
             check_constraint("runtime", [("gte", "min"), ("lte", "max")], "runtimeConstraint", range_name="runtimeRangeMinutes")
 
             if "adult" in data and data["adult"]:
@@ -445,6 +664,8 @@ class IMDb:
                 return imdb_ids
             raise Failed("IMDb Error: No IMDb IDs Found")
         except KeyError:
+            if 'errors' in response_json.keys() and 'message' in response_json['errors'][0] and response_json['errors'][0]['message'] == 'PersistedQueryNotFound':
+                raise Failed("Internal IMDB PersistedQuery Error")
             logger.error(f"Response: {response_json}")
             raise
 
@@ -517,13 +738,14 @@ class IMDb:
             parental_dict, expired = self.cache.query_imdb_parental(imdb_id, self.cache.expiration)
             if parental_dict and expired is False:
                 return parental_dict
-        response = self._request(f"{base_url}/title/{imdb_id}/parentalguide")
-        for ptype in util.parental_types:
-            results = response.xpath(f"//section[@id='advisory-{ptype}']//span[contains(@class,'ipl-status-pill')]/text()")
-            if results:
-                parental_dict[ptype] = results[0].strip()
-            else:
-                raise Failed(f"IMDb Error: No Item Found for IMDb ID: {imdb_id}")
+        for e in self._request(f"{base_url}/title/{imdb_id}/parentalguide", xpath="//li[contains(@class, 'ipc-metadata-list-item--link')]"):
+            parental_dict[util.parental_types[e.xpath("a/text()")[0][:-1]]] = e.xpath("div/div/div/text()")[0]
+        if parental_dict:
+            for _, v in util.parental_types.items():
+                if v not in parental_dict:
+                    parental_dict[v] = None
+        else:
+            raise Failed(f"IMDb Error: No Parental Guide Found for IMDb ID: {imdb_id}")
         if self.cache and not ignore_cache:
             self.cache.update_imdb_parental(expired, imdb_id, parental_dict, self.cache.expiration)
         return parental_dict

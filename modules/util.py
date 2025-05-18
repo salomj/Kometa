@@ -111,10 +111,10 @@ collection_mode_options = {
     "show_items": "showItems", "showitems": "showItems"
 }
 image_content_types = ["image/png", "image/jpeg", "image/webp"]
-parental_types = ["nudity", "violence", "profanity", "alcohol", "frightening"]
+parental_types = {"Sex & Nudity": "Nudity", "Violence & Gore": "Violence", "Profanity": "Profanity", "Alcohol, Drugs & Smoking": "Alcohol", "Frightening & Intense Scenes": "Frightening"}
 parental_values = ["None", "Mild", "Moderate", "Severe"]
 parental_levels = {"none": [], "mild": ["None"], "moderate": ["None", "Mild"], "severe": ["None", "Mild", "Moderate"]}
-parental_labels = [f"{t.capitalize()}:{v}" for t in parental_types for v in parental_values]
+parental_labels = [f"{t}:{v}" for t in parental_types.values() for v in parental_values]
 previous_time = None
 start_time = None
 
@@ -140,9 +140,9 @@ def add_dict_list(keys, value, dict_map):
         else:
             dict_map[key] = [int(value)]
 
-def get_list(data, lower=False, upper=False, split=True, int_list=False, trim=True):
+def get_list(data, lower=False, upper=False, split=True, int_list=False, trim=True, return_none=True):
     if split is True:               split = ","
-    if data is None:                return None
+    if data is None:                return None if return_none else []
     elif isinstance(data, list):    list_data = data
     elif isinstance(data, dict):    return [data]
     elif split is False:            list_data = [str(data)]
@@ -448,8 +448,8 @@ def is_date_filter(value, modifier, data, final, current_time):
     return False
 
 def is_number_filter(value, modifier, data):
-    return value is None or (modifier == "" and value == data) \
-            or (modifier == ".not" and value != data) \
+    return value is None or (modifier == "" and value != data) \
+            or (modifier == ".not" and value == data) \
             or (modifier == ".gt" and value <= data) \
             or (modifier == ".gte" and value < data) \
             or (modifier == ".lt" and value >= data) \
@@ -519,7 +519,7 @@ def schedule_check(attribute, data, current_time, run_hour, is_all=False):
             non_existing = True
         elif run_time == "never":
             schedule_str += f"\nNever scheduled to run"
-        elif run_time.startswith(("hour", "week", "month", "year", "range")):
+        elif run_time.startswith(("hour", "week", "month", "year", "date", "range")):
             match = re.search("\\(([^)]+)\\)", run_time)
             if not match:
                 logger.error(f"Schedule Error: failed to parse {attribute}: {schedule}")
@@ -591,6 +591,20 @@ def schedule_check(attribute, data, current_time, run_hour, is_all=False):
                         raise ValueError
                 except ValueError:
                     logger.error(f"Schedule Error: yearly {display} must be in the MM/DD format i.e. yearly(11/22)")
+            elif run_time.startswith("date"):
+                try:
+                    if "/" in param:
+                        opt = param.split("/")
+                        month = int(opt[0])
+                        day = int(opt[1])
+                        year = int(opt[2])
+                        schedule_str += f"\nScheduled on {pretty_months[month]} {num2words(day, to='ordinal_num')}, {year}"
+                        if current_time.year == year and current_time.month == month and (current_time.day == day or (current_time.day == last_day.day and day > last_day.day)):
+                            all_check += 1
+                    else:
+                        raise ValueError
+                except ValueError:
+                    logger.error(f"Schedule Error: date {display} must be in the MM/DD/YYYY format i.e. date(12/25/2024)")
             elif run_time.startswith("range"):
                 ranges = []
                 range_pass = False
@@ -629,12 +643,18 @@ def schedule_check(attribute, data, current_time, run_hour, is_all=False):
 def check_int(value, datatype="int", minimum=1, maximum=None, throw=False):
     try:
         value = int(str(value)) if datatype == "int" else float(str(value))
-        if (maximum is None and minimum <= value) or (maximum is not None and minimum <= value <= maximum):
+        if (maximum is None and minimum is None) or (maximum is not None and minimum is None and maximum >= value) or (maximum is None and minimum is not None and minimum <= value) or (maximum is not None and minimum is not None and minimum <= value <= maximum):
             return value
     except ValueError:
         if throw:
             message = f"{value} must be {'an integer' if datatype == 'int' else 'a number'}"
-            raise Failed(f"{message} {minimum} or greater" if maximum is None else f"{message} between {minimum} and {maximum}")
+            if maximum is not None and minimum is None:
+                message = f"{message} {maximum} or less"
+            elif maximum is None and minimum is not None:
+                message = f"{message} {minimum} or greater"
+            elif maximum is not None and minimum is not None:
+                message = f"{message} between {minimum} and {maximum}"
+            raise Failed(message)
         return None
 
 def parse_and_or(error, attribute, data, test_list):
@@ -763,7 +783,12 @@ def parse(error, attribute, data, datatype=None, methods=None, parent=None, defa
             if new_value is not None:
                 return new_value
         message = f"{display} {value} must {'each ' if range_split else ''}be {'an integer' if datatype == 'int' else 'a number'}"
-        message = f"{message} {minimum} or greater" if maximum is None else f"{message} between {minimum} and {maximum}"
+        if maximum is not None and minimum is None:
+            message = f"{message} {maximum} or less"
+        elif maximum is None and minimum is not None:
+            message = f"{message} {minimum} or greater"
+        elif maximum is not None and minimum is not None:
+            message = f"{message} between {minimum} and {maximum}"
         if range_split:
             message = f"{message} separated by a {range_split}"
     elif datatype == "date":
@@ -848,6 +873,39 @@ def parse_cords(data, parent, required=False, err_type="Overlay", default=None):
         vertical_offset = dvo
 
     return horizontal_offset, horizontal_align, vertical_offset, vertical_align
+
+def parse_scale(data, parent, err_type="Overlay"):
+    width = None
+    if "scale_width" in data and data["scale_width"] is not None:
+        scale_width = data["scale_width"]
+        per = False
+        if str(scale_width).endswith("%"):
+            scale_width = scale_width[:-1]
+            per = True
+        scale_width = check_num(scale_width)
+        error = f"{err_type} Error: {parent} scale_width: {data['scale_width']} must be a number or a percent"
+        if scale_width is None:
+            raise ValueError(error)
+        if scale_width < 1:
+            raise ValueError(f"{error} greater than 0")
+        width = f"{scale_width}%" if per else scale_width
+
+    height = None
+    if "scale_height" in data and data["scale_height"] is not None:
+        scale_height = data["scale_height"]
+        per = False
+        if str(scale_height).endswith("%"):
+            scale_height = scale_height[:-1]
+            per = True
+        scale_height = check_num(scale_height)
+        error = f"{err_type} Error: {parent} scale_height: {data['scale_height']} must be a number or a percent"
+        if scale_height is None:
+            raise ValueError(error)
+        if scale_height < 1:
+            raise ValueError(f"{error} greater than 0")
+        height = f"{scale_height}%" if per else scale_height
+
+    return width, height
 
 def replace_label(_label, _data):
     replaced = False

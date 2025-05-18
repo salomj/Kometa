@@ -1,11 +1,11 @@
-import argparse, os, platform, re, sys, time, uuid
+import argparse, os, platform, re, sys, sysconfig, time, uuid
 from collections import Counter
 from concurrent.futures import ProcessPoolExecutor
 from datetime import datetime
 from modules.logs import MyLogger
 
-if sys.version_info[0] != 3 or sys.version_info[1] < 8:
-    print("Version Error: Version: %s.%s.%s incompatible please use Python 3.8+" % (sys.version_info[0], sys.version_info[1], sys.version_info[2]))
+if sys.version_info[0] != 3 or sys.version_info[1] < 9:
+    print("Python Version %s.%s.%s has been detected and is not supported. Kometa requires a minimum of Python 3.9.0." % (sys.version_info[0], sys.version_info[1], sys.version_info[2]))
     sys.exit(0)
 
 try:
@@ -16,7 +16,7 @@ try:
     from plexapi.exceptions import NotFound
     from plexapi.video import Show, Season
 except (ModuleNotFoundError, ImportError) as ie:
-    print(f"Requirements Error: Requirements are not installed ({ie})")
+    print(f"Requirements Error: Requirements are not installed.\nPlease follow the documentation for instructions on installing requirements. ({ie})")
     sys.exit(0)
 
 system_versions = {
@@ -30,11 +30,12 @@ system_versions = {
     "psutil": psutil.__version__,
     "python-dotenv": dotenv_version.__version__,
     "python-dateutil": dateutil.__version__, # noqa
+    "pywin32": None,
     "requests": requests.__version__,
-    "tenacity": None,
     "ruamel.yaml": ruamel.yaml.__version__,
     "schedule": None,
     "setuptools": setuptools.__version__,
+    "tenacity": None,
     "tmdbapis": tmdbapis.__version__
 }
 
@@ -70,6 +71,7 @@ arguments = {
     "read-only-config": {"args": "ro", "type": "bool", "help": "Run without writing to the config"},
     "divider": {"args": "d", "type": "str", "default": "=", "help": "Character that divides the sections (Default: '=')"},
     "width": {"args": "w", "type": "int", "default": 100, "help": "Screen Width (Default: 100)"},
+    "low-priority": {"args": "lp", "type": "bool", "help": "Run Kometa with lower priority"}
 }
 
 parser = argparse.ArgumentParser()
@@ -185,17 +187,31 @@ if run_args["run-collections"]:
     run_args["collections-only"] = True
 
 if run_args["width"] < 90 or run_args["width"] > 300:
-    print(f"Argument Error: width argument invalid: {run_args['width']} must be an integer between 90 and 300 using the default 100")
+    print(f"Argument Error: width argument invalid: {run_args['width']} must be an integer between 90 and 300. Using the default value of 100")
     run_args["width"] = 100
 
 if run_args["config"] and os.path.exists(run_args["config"]):
     default_dir = os.path.join(os.path.dirname(os.path.abspath(run_args["config"])))
 elif run_args["config"] and not os.path.exists(run_args["config"]):
-    print(f"Config Error: config not found at {os.path.abspath(run_args['config'])}")
+    print(f"Config Error: Configuration file (config.yml) not found at {os.path.abspath(run_args['config'])}")
     sys.exit(0)
 elif not os.path.exists(os.path.join(default_dir, "config.yml")):
-    print(f"Config Error: config not found at {os.path.abspath(default_dir)}")
-    sys.exit(0)
+    git_branch = git_branch or "master"
+    github_url = f"https://raw.githubusercontent.com/Kometa-Team/Kometa/{git_branch}/config/config.yml.template"
+    config_path = os.path.join(default_dir, "config.yml")
+    try:
+        response = requests.get(github_url, timeout=10)
+        if response.status_code == 200:
+            with open(config_path, 'w') as config_file:
+                config_file.write(response.text)
+            print(f"Configuration File ('config.yml') has been downloaded from GitHub (Branch: '{git_branch}') and saved as '{config_path}'. Please update this file with your API keys and other required settings.")
+            sys.exit(1)
+        else:
+            raise requests.RequestException
+    except requests.RequestException as e:
+        print(f"Config Error: Unable to download the configuration file from GitHub (URL: {github_url}'). Please save it as '{config_path}' before running Kometa again.")
+        sys.exit(1)
+
 
 logger = MyLogger("Kometa", default_dir, run_args["width"], run_args["divider"][0], run_args["ignore-ghost"],
                   run_args["tests"] or run_args["debug"], run_args["trace"], run_args["log-requests"])
@@ -257,6 +273,22 @@ if not uuid_num:
 plexapi.BASE_HEADERS["X-Plex-Client-Identifier"] = str(uuid_num)
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
+if util.windows:
+    import win32api, win32process
+    site_packages = sysconfig.get_paths()["platlib"]
+    with open(os.path.join(site_packages, "pywin32.version.txt")) as v:
+        system_versions["pywin32"] = v.read().strip()
+
+if run_args["low-priority"]:
+    try:
+        if util.windows:
+            win32process.SetPriorityClass(win32api.GetCurrentProcess(), win32process.BELOW_NORMAL_PRIORITY_CLASS)
+        else:
+            os.nice(10)
+    except Exception as e:
+        logger.stacktrace()
+        logger.critical(f"Failed to set priority: {e}")
+
 def process(attrs):
     with ProcessPoolExecutor(max_workers=1) as executor:
         executor.submit(start, *[attrs])
@@ -284,10 +316,12 @@ def start(attrs):
         logger.info(f"    Platform: {platform.platform()}")
         logger.info(f"    Total Memory: {round(psutil.virtual_memory().total / (1024.0 ** 3))} GB")
         logger.info(f"    Available Memory: {round(psutil.virtual_memory().available / (1024.0 ** 3))} GB")
+        logger.info(f"    Process Priority: {'low' if run_args['low-priority'] else 'normal'}")
+
         if not is_docker and not is_linuxserver:
             try:
                 with open(os.path.abspath(os.path.join(os.path.dirname(__file__), "requirements.txt")), "r") as file:
-                    required_versions = {ln.split("==")[0]: ln.split("==")[1].strip() for ln in file.readlines()}
+                    required_versions = {ln.split("==")[0]: ln.split("==")[1].split(";")[0].strip() for ln in file.readlines()}
                 for req_name, sys_ver in system_versions.items():
                     if sys_ver and sys_ver != required_versions[req_name]:
                         logger.info(f"    {req_name} version: {sys_ver} requires an update to: {required_versions[req_name]}")
@@ -428,7 +462,9 @@ def start(attrs):
             logger.stacktrace()
             logger.error(f"Report Error: {e}")
 
-        logger.separator(f"Finished {start_type}Run\n{version_line}\nFinished: {end_time.strftime('%H:%M:%S %Y-%m-%d')} Run Time: {run_time}")
+        start_str = start_time.strftime('%H:%M:%S %Y-%m-%d')
+        end_str = end_time.strftime('%H:%M:%S %Y-%m-%d')
+        logger.separator(f"Finished {start_type}Run\n{version_line}\nStart Time: {start_str}     Finished: {end_str}     Run Time: {run_time}")
         logger.remove_main_handler()
     except Exception as e:
         logger.stacktrace()
@@ -620,6 +656,7 @@ def run_libraries(config):
             logger.debug(f"Show Unmanaged: {library.show_unmanaged}")
             logger.debug(f"Show Unconfigured: {library.show_unconfigured}")
             logger.debug(f"Show Filtered: {library.show_filtered}")
+            logger.debug(f"Show Unfiltered: {library.show_unfiltered}")
             logger.debug(f"Show Options: {library.show_options}")
             logger.debug(f"Show Missing: {library.show_missing}")
             logger.debug(f"Save Report: {library.save_report}")

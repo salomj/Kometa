@@ -79,6 +79,7 @@ class Library(ABC):
         self.show_unmanaged = params["show_unmanaged"]
         self.show_unconfigured = params["show_unconfigured"]
         self.show_filtered = params["show_filtered"]
+        self.show_unfiltered = params["show_unfiltered"]
         self.show_options = params["show_options"]
         self.show_missing = params["show_missing"]
         self.show_missing_assets = params["show_missing_assets"]
@@ -213,8 +214,7 @@ class Library(ABC):
                         self.reload(item, force=True)
                         if overlay and "Overlay" in [la.tag for la in self.item_labels(item)]:
                             item.removeLabel("Overlay")
-                    self._upload_image(item, poster)
-                    poster_uploaded = True
+                    poster_uploaded = self._upload_image(item, poster)
                     logger.info(f"Metadata: {poster.attribute} updated {poster.message}")
                 elif self.show_asset_not_needed:
                     logger.info(f"Metadata: {poster.prefix}poster update not needed")
@@ -229,8 +229,7 @@ class Library(ABC):
                 if self.config.Cache:
                     _, image_compare, _ = self.config.Cache.query_image_map(item.ratingKey, f"{self.image_table_name}_backgrounds")
                 if not image_compare or str(background.compare) != str(image_compare):
-                    self._upload_image(item, background)
-                    background_uploaded = True
+                    background_uploaded = self._upload_image(item, background)
                     logger.info(f"Metadata: {background.attribute} updated {background.message}")
                 elif self.show_asset_not_needed:
                     logger.info(f"Metadata: {background.prefix}background update not needed")

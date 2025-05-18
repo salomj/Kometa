@@ -1,3 +1,7 @@
+---
+hide:
+  - toc
+---
 # Dynamic Collection Types & Data
 
 Every dynamic collection definition requires the `type` attribute which determines the attribute used to dynamically 
@@ -190,6 +194,14 @@ requirements of creating the collection.
         latest)
 
         **Default:** `latest`
+
+    ??? blank "`increment` - Determines amount incremented.<a class="headerlink" href="#number-increment" title="Permanent link">¶</a>"
+        
+        <div id="number-increment" />Determines the amount incremented from one collection to the other.
+
+        **Allowed Values:** Number greater than 0
+
+        **Default:** `1`
 
     **Valid Library Types:** Movies and Shows
     
@@ -1573,7 +1585,7 @@ requirements of creating the collection.
               all-4: All 4
               appletv: Apple TV+
               bet: BET+
-              britbox: BritBox
+              itvx: ITVX
               disney: Disney+
               max: Max
               hulu: Hulu
@@ -1588,6 +1600,4 @@ requirements of creating the collection.
               - shared
         ```
 
-{%
-   include-markdown "./dynamic_examples.md"
-%}
+{% include-markdown "./../templates/snippets/dynamic_examples.md" %}

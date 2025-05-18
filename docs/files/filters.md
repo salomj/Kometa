@@ -1,6 +1,7 @@
 ---
 hide:
   - tags
+  - toc
 tags:
   - actor
   - added
@@ -58,7 +59,7 @@ tags:
 
 # Filters
 
-Filters allow for you to filter every item added to the collection/overlay/playlist from every builder using the `filters` attribute. 
+Filters allow for you to filter every item added to the collection/overlay/playlist from every Builder using the `filters` attribute. 
 
 ## Using Filters
 
@@ -86,725 +87,412 @@ filters:
 
 Anything that doesn't have either both the Genre `Action` and the Country `Germany` or the Genre `Comedy` and the Country `France` will be ignored.
 
-All filter options are listed below. To display items filtered out add `show_filtered: true` to the definition.
+All filter options are listed below. 
 
-You can use the `plex_all: true` builder to filter from your entire library.
+To display items filtered out add `show_filtered: true` to the definition. To display items that make it through the filters add `show_unfiltered: true` to the definition.
+
+You can use the `plex_all: true` Builder to filter from your entire library.
 
 ???+ warning
     
-    Filters can be very slow, particularly on larger libraries. Try to build or narrow your items using a [Smart Label Collection](builders/smart.md#smart-label), [Plex Search](builders/plex.md#plex-search) or another [Builder](overview.md) if possible.
+    Filters can be very slow, particularly on larger libraries. Try to build or narrow your items using a [Smart Label Collection](builders/plex.md#smart-label), [Plex Search](builders/plex.md#plex-search) or another [Builder](overview.md) if possible.
 
-## String Filters
+## Filter Options
 
-String filters can be used with either no modifier or with `.not`, `.is`, `.isnot`, `.begins`, `.ends`, or `.regex`.
-
-String filters can take multiple values **only as a list**.
-
-### Modifier
-
-| String Modifier | Description                                                                    |
-|:----------------|:-------------------------------------------------------------------------------|
-| No Modifier     | Matches every item where the attribute contains the given string               |
-| `.not`          | Matches every item where the attribute does not contain the given string       |
-| `.is`           | Matches every item where the attribute exactly matches the given string        |
-| `.isnot`        | Matches every item where the attribute does not exactly match the given string |
-| `.begins`       | Matches every item where the attribute begins with the given string            |
-| `.ends`         | Matches every item where the attribute ends with the given string              |
-| `.regex`        | Matches every item where the attribute matches the regex given                 |
-
-### Attribute
-
-| String Filter                                       | Description                              |                   Movies                   |                                      Shows                                       |                                     Seasons                                      |                  Episodes                   |                                     Artists                                      |                                      Albums                                      |                   Track                    |
-|:----------------------------------------------------|:-----------------------------------------|:------------------------------------------:|:--------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------:|:-------------------------------------------:|:--------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------:|:------------------------------------------:|
-| `title`                                             | Uses the title attribute to match        | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green }  |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } |
-| `tmdb_title`<sup>**[2](#table-annotations)**</sup>  | Uses the title from TMDb to match        | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }   |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `tvdb_title`<sup>**[2](#table-annotations)**</sup>  | Uses the title from TVDb to match        |  :fontawesome-solid-circle-xmark:{ .red }  |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }   |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `tvdb_status`<sup>**[2](#table-annotations)**</sup> | Uses the status from TVDb to match       |  :fontawesome-solid-circle-xmark:{ .red }  |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }   |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `summary`                                           | Uses the summary attribute to match      | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green }  |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } |
-| `studio`                                            | Uses the studio attribute to match       | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }   |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `edition`                                           | Uses the edition attribute to match      | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }   |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `record_label`                                      | Uses the record label attribute to match |  :fontawesome-solid-circle-xmark:{ .red }  |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }   |                     :fontawesome-solid-circle-xmark:{ .red }                     |                    :fontawesome-solid-circle-check:{ .green }                    |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `folder`                                            | Uses the item's folder to match          |  :fontawesome-solid-circle-xmark:{ .red }  |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }   |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `filepath`                                          | Uses the item's filepath to match        | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }  | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |
-| `audio_track_title`                                 | Uses the audio track titles to match     | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }  | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |
-| `video_codec`                                       | Uses the video codec tags to match       | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }  |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `video_profile`                                     | Uses the video profile tags to match     | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }  |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `audio_codec`                                       | Uses the audio codec tags to match       | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }  |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `audio_profile`                                     | Uses the audio profile tags to match     | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }  |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-
-## Tag Filters
-
-Tag filters can be used with either no modifier or with `.not`.
-
-Tag filters can take multiple values as a **list or a comma-separated string**.
-
-### Modifier
-
-| Tag Modifier | Description                                                                               |
-|:-------------|:------------------------------------------------------------------------------------------|
-| No Modifier  | Matches every item where the attribute matches the given string                           |
-| `.not`       | Matches every item where the attribute does not match the given string                    |
-| `.regex`     | Matches every item where one value of this attribute matches the regex.                   |
-| `.count_lt`  | Matches every item where the attribute count is less than the given number                |
-| `.count_lte` | Matches every item where the attribute count is less than the given number                |
-| `.count_gt`  | Matches every item where the attribute count is greater than the given number             |
-| `.count_gte` | Matches every item where the attribute count is greater than or equal to the given number |
-
-### Attribute
-
-| Tag Filters                                            | Description                                                                                                                                     |                   Movies                   |                                      Shows                                       |                                     Seasons                                      |                  Episodes                  |                  Artists                   |                   Albums                   |                   Track                    |
-|:-------------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------:|:--------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|
-| `actor`                                                | Uses the actor tags to match                                                                                                                    | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `collection`                                           | Uses the collection tags to match                                                                                                               | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |
-| `content_rating`                                       | Uses the content rating tags to match                                                                                                           | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `network`                                              | Uses the network tags to match                                                                                                                  |  :fontawesome-solid-circle-xmark:{ .red }  |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `country`                                              | Uses the country tags to match                                                                                                                  | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `director`                                             | Uses the director tags to match                                                                                                                 | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `genre`                                                | Uses the genre tags to match                                                                                                                    | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `label`                                                | Uses the label tags to match                                                                                                                    | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |
-| `producer`                                             | Uses the actor tags to match                                                                                                                    | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `year`<sup>**[3](#table-annotations)**</sup>           | Uses the year tag to match                                                                                                                      | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |
-| `writer`                                               | Uses the writer tags to match                                                                                                                   | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `resolution`                                           | Uses the resolution tag to match                                                                                                                | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `audio_language`                                       | Uses the audio language tags to match                                                                                                           | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `subtitle_language`                                    | Uses the subtitle language tags to match                                                                                                        | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `tmdb_genre`<sup>**[2](#table-annotations)**</sup>     | Uses the genres from TMDb to match                                                                                                              | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `tmdb_keyword`<sup>**[2](#table-annotations)**</sup>   | Uses the keywords from TMDb to match                                                                                                            | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `origin_country`<sup>**[2](#table-annotations)**</sup> | Uses TMDb origin country [ISO 3166-1 alpha-2 codes](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) to match<br>Example: `origin_country: us` |  :fontawesome-solid-circle-xmark:{ .red }  |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `tvdb_genre`<sup>**[2](#table-annotations)**</sup>     | Uses the genres from TVDb to match                                                                                                              |  :fontawesome-solid-circle-xmark:{ .red }  |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `imdb_keyword`<sup>**[2](#table-annotations)**</sup>   | Uses the keywords from IMDb to match See [Special](#special-filters) for more attributes                                                        | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-
-## Boolean Filters
-
-Boolean Filters have no modifiers.
-
-### Attribute
-
-| Boolean Filters    | Description                                                                                              |                   Movies                   |                                      Shows                                       |                                     Seasons                                      |                  Episodes                  |                  Artists                   |                   Albums                   |                   Track                    |
-|:-------------------|:---------------------------------------------------------------------------------------------------------|:------------------------------------------:|:--------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|
-| `has_collection`   | Matches every item that has or does not have a collection                                                | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |
-| `has_edition`      | Matches every item that has or does not have an edition                                                  | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `has_stinger`      | Matches every item that has a [media stinger](http://www.mediastinger.com/) (After/During Credits Scene) | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `has_dolby_vision` | Matches every item that has or does not have a dolby vision                                              | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `has_overlay`      | Matches every item that has or does not have an overlay                                                  | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |
-
-## Date Filters
-
-Date filters can be used with either no modifier or with `.not`, `.before`, `.after`, or `.regex`.
-
-Date filters can **NOT** take multiple values.
-
-### Modifier
-
-| Date Modifier | Description                                                           |                                   Format                                   |
-|:--------------|:----------------------------------------------------------------------|:--------------------------------------------------------------------------:|
-| No Modifier   | Matches every item where the date attribute is in the last X days     |                  **Format:** number of days<br>e.g. `30`                   |
-| `.not`        | Matches every item where the date attribute is not in the last X days |                  **Format:** number of days<br>e.g. `30`                   |
-| `.before`     | Matches every item where the date attribute is before the given date  | **Format:** MM/DD/YYYY or `today` for the current day<br>e.g. `01/01/2000` |
-| `.after`      | Matches every item where the date attribute is after the given date   | **Format:** MM/DD/YYYY or `today` for the current day<br>e.g. `01/01/2000` |
-| `.regex`      | Matches every item where the attribute matches the regex given        |                                    N/A                                     |
-
-### Attribute
-
-| Date Filters                                                    | Description                                                                    |                   Movies                   |                   Shows                    |                  Seasons                   |                  Episodes                  |                  Artists                   |                   Albums                   |                   Track                    |
-|:----------------------------------------------------------------|:-------------------------------------------------------------------------------|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|
-| `release`                                                       | Uses the release date attribute (originally available) to match                | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `added`                                                         | Uses the date added attribute to match                                         | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |
-| `last_played`                                                   | Uses the date last played attribute to match                                   | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |
-| `first_episode_aired`<sup>**[2](#table-annotations)**</sup>     | Uses the first episode aired date to match                                     |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `last_episode_aired`<sup>**[2](#table-annotations)</sup>        | Uses the last episode aired date to match                                      |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `last_episode_aired_or_never`<sup>[2](#table-annotations)</sup> | Similar to `last_episode_aired` but also includes those that haven't aired yet |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-
-## Number Filters
-
-Number filters must use `.gt`, `.gte`, `.lt`, or `.lte` as a modifier.
-
-Number filters can **NOT** take multiple values.
-
-### Modifier
-
-| Number Modifier | Description                                                                                |                      Format                       |
-|:----------------|:-------------------------------------------------------------------------------------------|:-------------------------------------------------:|
-| No Modifier     | Matches every item where the number attribute is equal to the given number                 | **Format:** number<br>e.g. `30`, `1995`, or `7.5` |
-| `.not`          | Matches every item where the number attribute is not equal to the given number             | **Format:** number<br>e.g. `30`, `1995`, or `7.5` |
-| `.gt`           | Matches every item where the number attribute is greater than the given number             | **Format:** number<br>e.g. `30`, `1995`, or `7.5` |
-| `.gte`          | Matches every item where the number attribute is greater than or equal to the given number | **Format:** number<br>e.g. `30`, `1995`, or `7.5` |
-| `.lt`           | Matches every item where the number attribute is less than the given number                | **Format:** number<br>e.g. `30`, `1995`, or `7.5` |
-| `.lte`          | Matches every item where the number attribute is less than or equal to the given number    | **Format:** number<br>e.g. `30`, `1995`, or `7.5` |
-
-### Attribute
-
-| Number Filters                                                                          | Description                                                                                                                                                                 |                   Movies                   |                                      Shows                                       |                                     Seasons                                      |                  Episodes                  |                                     Artists                                      |                                      Albums                                      |                   Track                    |
-|:----------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------:|:--------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------:|:------------------------------------------:|:--------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------:|:------------------------------------------:|
-| `year`<sup>**[3](#table-annotations)**</sup>                                            | Uses the year attribute to match<br>minimum: `1`                                                                                                                            | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } |
-| `tmdb_year`<sup>**[2](#table-annotations)**</sup><sup>**[3](#table-annotations)**</sup> | Uses the year on TMDb to match<br>minimum: `1`                                                                                                                              | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `critic_rating`                                                                         | Uses the critic rating attribute to match<br>`0.0` - `10.0`                                                                                                                 | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                    :fontawesome-solid-circle-check:{ .green }                    |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `audience_rating`                                                                       | Uses the audience rating attribute to match<br> `0.0` - `10.0`                                                                                                              | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `user_rating`                                                                           | Uses the user rating attribute to match<br>`0.0` - `10.0`                                                                                                                   | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } |
-| `tmdb_vote_count`<sup>**[2](#table-annotations)**</sup>                                 | Uses the tmdb vote count to match<br>minimum: `1`                                                                                                                           | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `tmdb_vote_average`<sup>**[2](#table-annotations)**</sup>                               | Uses the tmdb vote average rating to match<br>minimum: `0.0`                                                                                                                | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `plays`                                                                                 | Uses the plays attribute to match<br>minimum: `1`                                                                                                                           | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } |
-| `duration`                                                                              | Uses the duration attribute to match using minutes<br>minimum: `0`                                                                                                          | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     | :fontawesome-solid-circle-check:{ .green } |
-| `channels`                                                                              | Uses the audio channels attribute to match<br>minimum: `0`                                                                                                                  | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `height`                                                                                | Uses the height attribute to match<br>minimum: `0`                                                                                                                          | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `width`                                                                                 | Uses the width attribute to match<br>minimum: `0`                                                                                                                           | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `aspect`                                                                                | Uses the aspect attribute to match<br>minimum: `0.0`                                                                                                                        | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `versions`                                                                              | Uses the number of versions found to match<br>minimum: `0`                                                                                                                  | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |
-| `stinger_rating`<sup>**[4](#table-annotations)**</sup>                                  | Uses the [media stinger](http://www.mediastinger.com/) rating to match. The media stinger rating is if the after/during credits scene is worth staying for.<br>minimum: `0` | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  | 
-
-## Special Filters
-
-Special Filters each have their own set of rules for how they're used.
-
-### Attribute
-
-| Special Filters                                                                                                            | Description                                                                                                                                                                                                                                                                                              |                   Movies                   |                   Shows                    |                  Seasons                   |                  Episodes                  |                  Artists                   |                   Albums                   |                  Track                   |
-|:---------------------------------------------------------------------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:----------------------------------------:|
-| `history`                                                                                                                  | Uses the release date attribute (originally available) to match dates throughout history<br>`day`: Match the Day and Month to Today's Date<br>`month`: Match the Month to Today's Date<br>`1-30`: Match the Day and Month to Today's Date or `1-30` days before Today's Date                             | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-xmark:{ .red } |
-| `episodes`                                                                                                                 | Uses the item's episodes attributes to match <br> Use the `percentage` attribute given a number between 0-100 to determine the percentage of an items episodes that must match the sub-filter.                                                                                                           |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-xmark:{ .red } |
-| `seasons`                                                                                                                  | Uses the item's seasons attributes to match <br> Use the `percentage` attribute given a number between 0-100 to determine the percentage of an items seasons that must match the sub-filter.                                                                                                             |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-xmark:{ .red } |
-| `tracks`                                                                                                                   | Uses the item's tracks attributes to match <br> Use the `percentage` attribute given a number between 0-100 to determine the percentage of an items tracks that must match the sub-filter.                                                                                                               |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-xmark:{ .red } |
-| `albums`                                                                                                                   | Uses the item's albums attributes to match <br> Use the `percentage` attribute given a number between 0-100 to determine the percentage of an items albums that must match the sub-filter.                                                                                                               |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-xmark:{ .red } |
-| `original_language`<sup>**[2](#table-annotations)**</sup><br>`original_language.not`<sup>**[2](#table-annotations)**</sup> | Uses TMDb original language [ISO 639-1 codes](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) to match<br>Example: `original_language: en, ko`                                                                                                                                                    | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-xmark:{ .red } |
-| `tmdb_status`<sup>**[2](#table-annotations)**</sup><br>`tmdb_status.not`<sup>**[2](#table-annotations)**</sup>             | Uses TMDb Status to match<br>**Values:** `returning`, `planned`, `production`, `ended`, `canceled`, `pilot`                                                                                                                                                                                              |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-xmark:{ .red } |
-| `tmdb_type`<sup>**[2](#table-annotations)**</sup><br>`tmdb_type.not`<sup>**[2](#table-annotations)**</sup>                 | Uses TMDb Type to match<br>**Values:** `documentary`, `news`, `production`, `miniseries`, `reality`, `scripted`, `talk_show`, `video`                                                                                                                                                                    |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-xmark:{ .red } |
-| `imdb_keyword`<sup>**[2](#table-annotations)**</sup><sup>**[5](#table-annotations)**</sup>                                 | Uses the keywords from IMDb to match<br>`keywords`: list of keywords to match<br>`minimum_votes`: minimum number of votes keywords must have<br>`minimum_relevant`: minimum number of relevant votes keywords must have<br>`minimum_percentage`: minimum percentage of relevant votes keywords must have | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-xmark:{ .red } |
-
-## Table Annotations
-
-<sup>**1**</sup> Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).
-
-<sup>**2**</sup> Also filters out missing movies/shows from being added to Radarr/Sonarr. These Values also cannot use the `count` modifiers.
-
-<sup>**3**</sup> You can use `current_year` to have Kometa use the current years value. This can be combined with a `-#` at the end to subtract that number of years. i.e. `current_year-2`
-
-<sup>**4**</sup> The actual numbers are pulled from the [Mediastingers](https://github.com/Kometa-Team/Mediastingers) Repo.
-
-<sup>**5**</sup> Also is a Tag Filter and can use all of those modifiers.
-
-## Collection Filter Examples
-
-A few examples are listed below:
-
-```yaml
-collections:
-  1080p Documentaries:
-    plex_search:
-      all:
-        genre: Documentary
-    summary: A collection of 1080p Documentaries
-    filters:
-      resolution: 1080
-```
-```yaml
-collections:
-  Daniel Craig only James Bonds:
-    imdb_list:
-      list_id: ls006405458
-    filters:
-      actor: Daniel Craig
-```
-```yaml
-collections:
-  French Romance:
-    plex_search:
-      all:
-        genre: Romance
-    filters:
-      audio_language: Français
-```
-```yaml
-collections:
-  Romantic Comedies:
-    plex_search:
-      all:
-        genre: Romance
-    filters:
-      genre: Comedy
-```
-```yaml
-collections:
-  9.0 Movies:
-    plex_all: true
-    filters:
-      user_rating.gte: 9
-```
-```yaml
-collections:
-  Summer 2020 Movies:
-    plex_all: true
-    filters:
-      release.after: 5/1/2020
-      release.before: 8/31/2020
-```
-```yaml
-collections:
-  Movies Released in the Last 180 Days:
-    plex_all: true
-    filters:
-      release: 180
-```
-```yaml
-collections:
-  Good Adam Sandler Romantic Comedies:
-    plex_search:
-      all:
-        genre: Romance
-        actor: Adam Sandler
-    filters:
-      genre: Comedy
-      user_rating.gte: 7
-```
-```yaml
-collections:
-  Movies with Commentary:
-    plex_all: true
-    filters:
-      audio_track_title: Commentary
-```
----
-
-## Tag Filters
-
-Tag filters can be used with either no modifier or with `.not`.
-
-Tag filters can take multiple values as a **list or a comma-separated string**.
-
-### Modifier
-
-| Tag Modifier | Description                                                                               |
-|:-------------|:------------------------------------------------------------------------------------------|
-| No Modifier  | Matches every item where the attribute matches the given string                           |
-| `.not`       | Matches every item where the attribute does not match the given string                    |
-| `.regex`     | Matches every item where one value of this attribute matches the regex.                   |
-| `.count_lt`  | Matches every item where the attribute count is less than the given number                |
-| `.count_lte` | Matches every item where the attribute count is less than the given number                |
-| `.count_gt`  | Matches every item where the attribute count is greater than the given number             |
-| `.count_gte` | Matches every item where the attribute count is greater than or equal to the given number |
-
-### Attribute
-
-| Tag Filters                                            | Description                                                                                                                                     |                   Movies                   |                                      Shows                                       |                                     Seasons                                      |                  Episodes                  |                  Artists                   |                   Albums                   |                   Track                    |
-|:-------------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------:|:--------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|
-| `actor`                                                | Uses the actor tags to match                                                                                                                    | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `collection`                                           | Uses the collection tags to match                                                                                                               | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |
-| `content_rating`                                       | Uses the content rating tags to match                                                                                                           | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `network`                                              | Uses the network tags to match                                                                                                                  |  :fontawesome-solid-circle-xmark:{ .red }  |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `country`                                              | Uses the country tags to match                                                                                                                  | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `director`                                             | Uses the director tags to match                                                                                                                 | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `genre`                                                | Uses the genre tags to match                                                                                                                    | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `label`                                                | Uses the label tags to match                                                                                                                    | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |
-| `producer`                                             | Uses the actor tags to match                                                                                                                    | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `year`<sup>**[3](#table-annotations)**</sup>           | Uses the year tag to match                                                                                                                      | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |
-| `writer`                                               | Uses the writer tags to match                                                                                                                   | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `resolution`                                           | Uses the resolution tag to match                                                                                                                | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `audio_language`                                       | Uses the audio language tags to match                                                                                                           | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `subtitle_language`                                    | Uses the subtitle language tags to match                                                                                                        | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `tmdb_genre`<sup>**[2](#table-annotations)**</sup>     | Uses the genres from TMDb to match                                                                                                              | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `tmdb_keyword`<sup>**[2](#table-annotations)**</sup>   | Uses the keywords from TMDb to match                                                                                                            | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `origin_country`<sup>**[2](#table-annotations)**</sup> | Uses TMDb origin country [ISO 3166-1 alpha-2 codes](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) to match<br>Example: `origin_country: us` |  :fontawesome-solid-circle-xmark:{ .red }  |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `tvdb_genre`<sup>**[2](#table-annotations)**</sup>     | Uses the genres from TVDb to match                                                                                                              |  :fontawesome-solid-circle-xmark:{ .red }  |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `imdb_keyword`<sup>**[2](#table-annotations)**</sup>   | Uses the keywords from IMDb to match See [Special](#special-filters) for more attributes                                                        | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-
-## Boolean Filters
-
-Boolean Filters have no modifiers.
-
-### Attribute
-
-| Boolean Filters    | Description                                                                                              |                   Movies                   |                                      Shows                                       |                                     Seasons                                      |                  Episodes                  |                  Artists                   |                   Albums                   |                   Track                    |
-|:-------------------|:---------------------------------------------------------------------------------------------------------|:------------------------------------------:|:--------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|
-| `has_collection`   | Matches every item that has or does not have a collection                                                | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |
-| `has_edition`      | Matches every item that has or does not have an edition                                                  | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `has_stinger`      | Matches every item that has a [media stinger](http://www.mediastinger.com/) (After/During Credits Scene) | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `has_dolby_vision` | Matches every item that has or does not have a dolby vision                                              | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `has_overlay`      | Matches every item that has or does not have an overlay                                                  | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |
-
-## Date Filters
-
-Date filters can be used with either no modifier or with `.not`, `.before`, `.after`, or `.regex`.
-
-Date filters can **NOT** take multiple values.
-
-### Modifier
-
-| Date Modifier | Description                                                           |                                   Format                                   |
-|:--------------|:----------------------------------------------------------------------|:--------------------------------------------------------------------------:|
-| No Modifier   | Matches every item where the date attribute is in the last X days     |                  **Format:** number of days<br>e.g. `30`                   |
-| `.not`        | Matches every item where the date attribute is not in the last X days |                  **Format:** number of days<br>e.g. `30`                   |
-| `.before`     | Matches every item where the date attribute is before the given date  | **Format:** MM/DD/YYYY or `today` for the current day<br>e.g. `01/01/2000` |
-| `.after`      | Matches every item where the date attribute is after the given date   | **Format:** MM/DD/YYYY or `today` for the current day<br>e.g. `01/01/2000` |
-| `.regex`      | Matches every item where the attribute matches the regex given        |                                    N/A                                     |
-
-### Attribute
-
-| Date Filters                                                    | Description                                                                    |                   Movies                   |                   Shows                    |                  Seasons                   |                  Episodes                  |                  Artists                   |                   Albums                   |                   Track                    |
-|:----------------------------------------------------------------|:-------------------------------------------------------------------------------|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|
-| `release`                                                       | Uses the release date attribute (originally available) to match                | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `added`                                                         | Uses the date added attribute to match                                         | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |
-| `last_played`                                                   | Uses the date last played attribute to match                                   | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |
-| `first_episode_aired`<sup>**[2](#table-annotations)**</sup>     | Uses the first episode aired date to match                                     |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `last_episode_aired`<sup>**[2](#table-annotations)</sup>        | Uses the last episode aired date to match                                      |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `last_episode_aired_or_never`<sup>[2](#table-annotations)</sup> | Similar to `last_episode_aired` but also includes those that haven't aired yet |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-
-## Number Filters
-
-Number filters must use `.gt`, `.gte`, `.lt`, or `.lte` as a modifier.
-
-Number filters can **NOT** take multiple values.
-
-### Modifier
-
-| Number Modifier | Description                                                                                |                      Format                       |
-|:----------------|:-------------------------------------------------------------------------------------------|:-------------------------------------------------:|
-| No Modifier     | Matches every item where the number attribute is equal to the given number                 | **Format:** number<br>e.g. `30`, `1995`, or `7.5` |
-| `.not`          | Matches every item where the number attribute is not equal to the given number             | **Format:** number<br>e.g. `30`, `1995`, or `7.5` |
-| `.gt`           | Matches every item where the number attribute is greater than the given number             | **Format:** number<br>e.g. `30`, `1995`, or `7.5` |
-| `.gte`          | Matches every item where the number attribute is greater than or equal to the given number | **Format:** number<br>e.g. `30`, `1995`, or `7.5` |
-| `.lt`           | Matches every item where the number attribute is less than the given number                | **Format:** number<br>e.g. `30`, `1995`, or `7.5` |
-| `.lte`          | Matches every item where the number attribute is less than or equal to the given number    | **Format:** number<br>e.g. `30`, `1995`, or `7.5` |
-
-### Attribute
-
-| Number Filters                                                                          | Description                                                                                                                                                                 |                   Movies                   |                                      Shows                                       |                                     Seasons                                      |                  Episodes                  |                                     Artists                                      |                                      Albums                                      |                   Track                    |
-|:----------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------:|:--------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------:|:------------------------------------------:|:--------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------:|:------------------------------------------:|
-| `year`<sup>**[3](#table-annotations)**</sup>                                            | Uses the year attribute to match<br>minimum: `1`                                                                                                                            | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } |
-| `tmdb_year`<sup>**[2](#table-annotations)**</sup><sup>**[3](#table-annotations)**</sup> | Uses the year on TMDb to match<br>minimum: `1`                                                                                                                              | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `critic_rating`                                                                         | Uses the critic rating attribute to match<br>`0.0` - `10.0`                                                                                                                 | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                    :fontawesome-solid-circle-check:{ .green }                    |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `audience_rating`                                                                       | Uses the audience rating attribute to match<br> `0.0` - `10.0`                                                                                                              | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `user_rating`                                                                           | Uses the user rating attribute to match<br>`0.0` - `10.0`                                                                                                                   | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } |
-| `tmdb_vote_count`<sup>**[2](#table-annotations)**</sup>                                 | Uses the tmdb vote count to match<br>minimum: `1`                                                                                                                           | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `tmdb_vote_average`<sup>**[2](#table-annotations)**</sup>                               | Uses the tmdb vote average rating to match<br>minimum: `0.0`                                                                                                                | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `plays`                                                                                 | Uses the plays attribute to match<br>minimum: `1`                                                                                                                           | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } |
-| `duration`                                                                              | Uses the duration attribute to match using minutes<br>minimum: `0`                                                                                                          | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     | :fontawesome-solid-circle-check:{ .green } |
-| `channels`                                                                              | Uses the audio channels attribute to match<br>minimum: `0`                                                                                                                  | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `height`                                                                                | Uses the height attribute to match<br>minimum: `0`                                                                                                                          | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `width`                                                                                 | Uses the width attribute to match<br>minimum: `0`                                                                                                                           | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `aspect`                                                                                | Uses the aspect attribute to match<br>minimum: `0.0`                                                                                                                        | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `versions`                                                                              | Uses the number of versions found to match<br>minimum: `0`                                                                                                                  | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |
-| `stinger_rating`<sup>**[4](#table-annotations)**</sup>                                  | Uses the [media stinger](http://www.mediastinger.com/) rating to match. The media stinger rating is if the after/during credits scene is worth staying for.<br>minimum: `0` | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  | 
-
-## Special Filters
-
-Special Filters each have their own set of rules for how they're used.
-
-### Attribute
-
-| Special Filters                                                                                                            | Description                                                                                                                                                                                                                                                                                              |                   Movies                   |                   Shows                    |                  Seasons                   |                  Episodes                  |                  Artists                   |                   Albums                   |                  Track                   |
-|:---------------------------------------------------------------------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:----------------------------------------:|
-| `history`                                                                                                                  | Uses the release date attribute (originally available) to match dates throughout history<br>`day`: Match the Day and Month to Today's Date<br>`month`: Match the Month to Today's Date<br>`1-30`: Match the Day and Month to Today's Date or `1-30` days before Today's Date                             | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-xmark:{ .red } |
-| `episodes`                                                                                                                 | Uses the item's episodes attributes to match <br> Use the `percentage` attribute given a number between 0-100 to determine the percentage of an items episodes that must match the sub-filter.                                                                                                           |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-xmark:{ .red } |
-| `seasons`                                                                                                                  | Uses the item's seasons attributes to match <br> Use the `percentage` attribute given a number between 0-100 to determine the percentage of an items seasons that must match the sub-filter.                                                                                                             |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-xmark:{ .red } |
-| `tracks`                                                                                                                   | Uses the item's tracks attributes to match <br> Use the `percentage` attribute given a number between 0-100 to determine the percentage of an items tracks that must match the sub-filter.                                                                                                               |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-xmark:{ .red } |
-| `albums`                                                                                                                   | Uses the item's albums attributes to match <br> Use the `percentage` attribute given a number between 0-100 to determine the percentage of an items albums that must match the sub-filter.                                                                                                               |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-xmark:{ .red } |
-| `original_language`<sup>**[2](#table-annotations)**</sup><br>`original_language.not`<sup>**[2](#table-annotations)**</sup> | Uses TMDb original language [ISO 639-1 codes](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) to match<br>Example: `original_language: en, ko`                                                                                                                                                    | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-xmark:{ .red } |
-| `tmdb_status`<sup>**[2](#table-annotations)**</sup><br>`tmdb_status.not`<sup>**[2](#table-annotations)**</sup>             | Uses TMDb Status to match<br>**Values:** `returning`, `planned`, `production`, `ended`, `canceled`, `pilot`                                                                                                                                                                                              |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-xmark:{ .red } |
-| `tmdb_type`<sup>**[2](#table-annotations)**</sup><br>`tmdb_type.not`<sup>**[2](#table-annotations)**</sup>                 | Uses TMDb Type to match<br>**Values:** `documentary`, `news`, `production`, `miniseries`, `reality`, `scripted`, `talk_show`, `video`                                                                                                                                                                    |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-xmark:{ .red } |
-| `imdb_keyword`<sup>**[2](#table-annotations)**</sup><sup>**[5](#table-annotations)**</sup>                                 | Uses the keywords from IMDb to ---
-
-# Filters
-
-Filters allow for you to filter every item added to the collection/overlay/playlist from every builder using the `filters` attribute. 
-
-## Using Filters
-
-Filters cannot do anything alone they require the use of at least one [Builder](builders/overview.md) to function.
-
-You can have multiple filters in each set but an item must match at least one value from **each** filter to not be ignored. The values for each must match what Plex has including special characters in order to match.
-
-```yaml
-filters:
-  genre: Action
-  country: Germany
-```
-
-Anything that doesn't have both the Genre `Action` and the Country `Germany` will be ignored.
-
-Multiple Filter Sets can be given as a list. With multiple sets only one of the sets must pass for the item to not be ignored. 
-
-```yaml
-filters:
-  - genre: Action
-    country: Germany
-  - genre: Comedy
-    country: France
-```
-
-Anything that doesn't have either both the Genre `Action` and the Country `Germany` or the Genre `Comedy` and the Country `France` will be ignored.
-
-All filter options are listed below. To display items filtered out add `show_filtered: true` to the definition.
-
-You can use the `plex_all: true` builder to filter from your entire library.
-
-???+ warning
+=== "Boolean Filters"
     
-    Filters can be very slow, particularly on larger libraries. Try to build or narrow your items using a [Smart Label Collection](builders/smart.md#smart-label), [Plex Search](builders/plex.md#plex-search) or another [Builder](overview.md) if possible.
+    **Modifiers:** No Modifier
+    
+    ### Boolean Filter Attributes
+    
+    <div class="annotate" markdown>
 
-## String Filters
+    | Boolean Filters       | Description                                                                                              | Allowed Media                                                              |
+    | :-------------------- | :------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------- |
+    | `has_collection`      | Matches every item that has or does not have a collection                                                | `Movies`<br>`Shows`<br>`Seasons`,<br>`Episodes`<br>`Artists`<br>`Albums`<br>`Tracks` |
+    | `has_dolby_vision`(1) | Matches every item that has or does not have a dolby vision                                              | `Movies`<br>`Shows`(2)<br>`Seasons`(3)<br>`Episodes`                             |
+    | `has_edition`         | Matches every item that has or does not have an edition                                                  | `Movies`                                                                   |
+    | `has_overlay`         | Matches every item that has or does not have an overlay                                                  | `Movies`<br>`Shows`<br>`Seasons`,<br>`Episodes`<br>`Artists`<br>`Albums`           |
+    | `has_stinger`         | Matches every item that has a [media stinger](http://www.mediastinger.com/) (After/During Credits Scene) | `Movies`                                                                   |
 
-String filters can be used with either no modifier or with `.not`, `.is`, `.isnot`, `.begins`, `.ends`, or `.regex`.
+    </div>
 
-String filters can take multiple values **only as a list**.
+    1. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    2. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    3. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
 
-### Modifier
+    #### Examples
+    
+    ```yaml
+    collections:
+     Movies with Mediastingers:
+       plex_all: true
+       filters:
+         has_stinger: true
+    ```
+    ```yaml
+    collections:
+     Movies with Editions:
+       plex_all: true
+       filters:
+         has_edition: true
+    ```
+    
 
-| String Modifier | Description                                                                    |
-|:----------------|:-------------------------------------------------------------------------------|
-| No Modifier     | Matches every item where the attribute contains the given string               |
-| `.not`          | Matches every item where the attribute does not contain the given string       |
-| `.is`           | Matches every item where the attribute exactly matches the given string        |
-| `.isnot`        | Matches every item where the attribute does not exactly match the given string |
-| `.begins`       | Matches every item where the attribute begins with the given string            |
-| `.ends`         | Matches every item where the attribute ends with the given string              |
-| `.regex`        | Matches every item where the attribute matches the regex given                 |
+=== "Date Filters"
 
-### Attribute
+    **Modifiers:** No Modifier, `.not`, `.before`, `.after`, or `.regex`
+    
+    Date filters can **NOT** take multiple values.
+    
+    ### Date Filter Attributes
 
-| String Filter                                       | Description                              |                   Movies                   |                                      Shows                                       |                                     Seasons                                      |                  Episodes                   |                                     Artists                                      |                                      Albums                                      |                   Track                    |
-|:----------------------------------------------------|:-----------------------------------------|:------------------------------------------:|:--------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------:|:-------------------------------------------:|:--------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------:|:------------------------------------------:|
-| `title`                                             | Uses the title attribute to match        | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green }  |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } |
-| `tmdb_title`<sup>**[2](#table-annotations)**</sup>  | Uses the title from TMDb to match        | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }   |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `tvdb_title`<sup>**[2](#table-annotations)**</sup>  | Uses the title from TVDb to match        |  :fontawesome-solid-circle-xmark:{ .red }  |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }   |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `tvdb_status`<sup>**[2](#table-annotations)**</sup> | Uses the status from TVDb to match       |  :fontawesome-solid-circle-xmark:{ .red }  |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }   |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `summary`                                           | Uses the summary attribute to match      | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green }  |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } |
-| `studio`                                            | Uses the studio attribute to match       | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }   |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `edition`                                           | Uses the edition attribute to match      | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }   |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `record_label`                                      | Uses the record label attribute to match |  :fontawesome-solid-circle-xmark:{ .red }  |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }   |                     :fontawesome-solid-circle-xmark:{ .red }                     |                    :fontawesome-solid-circle-check:{ .green }                    |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `folder`                                            | Uses the item's folder to match          |  :fontawesome-solid-circle-xmark:{ .red }  |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }   |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `filepath`                                          | Uses the item's filepath to match        | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }  | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |
-| `audio_track_title`                                 | Uses the audio track titles to match     | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }  | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |
-| `video_codec`                                       | Uses the video codec tags to match       | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }  |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `video_profile`                                     | Uses the video profile tags to match     | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }  |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `audio_codec`                                       | Uses the audio codec tags to match       | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }  |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `audio_profile`                                     | Uses the audio profile tags to match     | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }  |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
+    <div class="annotate" markdown>
 
-## Tag Filters
+    | Date Filters                     | Description                                                                    | Allowed Media                                                              |
+    | :------------------------------- | :----------------------------------------------------------------------------- | :------------------------------------------------------------------------- |
+    | `added`                          | Uses the date added attribute to match                                         | `Movies`<br>`Shows`<br>`Seasons`,<br>`Episodes`<br>`Artists`<br>`Albums`<br>`Tracks` |
+    | `first_episode_aired`(1)         | Uses the first episode aired date to match                                     | `Shows`                                                                    |
+    | `last_episode_aired_or_never`(3) | Similar to `last_episode_aired` but also includes those that haven't aired yet | `Shows`                                                                    |
+    | `last_episode_aired`(2)          | Uses the last episode aired date to match                                      | `Shows`                                                                    |
+    | `last_played`                    | Uses the date last played attribute to match                                   | `Movies`<br>`Shows`<br>`Seasons`,<br>`Episodes`<br>`Artists`<br>`Albums`<br>`Tracks` |
+    | `release`                        | Uses the release date attribute (originally available) to match                | `Movies`<br>`Shows`<br>`Episodes`<br>`Albums`                                    |
 
-Tag filters can be used with either no modifier or with `.not`.
+    </div>
 
-Tag filters can take multiple values as a **list or a comma-separated string**.
+    1. Also filters out missing movies/shows from being added to Radarr/Sonarr. These Values also cannot use the `count` modifiers.  
+    2. Also filters out missing movies/shows from being added to Radarr/Sonarr. These Values also cannot use the `count` modifiers.  
+    3. Also filters out missing movies/shows from being added to Radarr/Sonarr. These Values also cannot use the `count` modifiers.  
+    
+    ???+ tip "Date Filter Modifiers"
+        
+        | Date Modifier | Description                                                           | Format                                                                     |
+        | :------------ | :-------------------------------------------------------------------- | :------------------------------------------------------------------------- |
+        | No Modifier   | Matches every item where the date attribute is in the last X days     | **Format:** number of days<br>e.g. `30`                                    |
+        | `.after`      | Matches every item where the date attribute is after the given date   | **Format:** MM/DD/YYYY or `today` for the current day<br>e.g. `01/01/2000` |
+        | `.before`     | Matches every item where the date attribute is before the given date  | **Format:** MM/DD/YYYY or `today` for the current day<br>e.g. `01/01/2000` |
+        | `.not`        | Matches every item where the date attribute is not in the last X days | **Format:** number of days<br>e.g. `30`                                    |
+        | `.regex`      | Matches every item where the attribute matches the regex given        | N/A                                                                        |
 
-### Modifier
+    #### Examples
+    
+    ```yaml
+    collections:
+     Summer 2020 Movies:
+       plex_all: true
+       filters:
+         release.after: 5/1/2020
+         release.before: 8/31/2020
+    ```
+    ```yaml
+    collections:
+     Movies Released in the Last 180 Days:
+       plex_all: true
+       filters:
+         release: 180
+    ```
 
-| Tag Modifier | Description                                                                               |
-|:-------------|:------------------------------------------------------------------------------------------|
-| No Modifier  | Matches every item where the attribute matches the given string                           |
-| `.not`       | Matches every item where the attribute does not match the given string                    |
-| `.regex`     | Matches every item where one value of this attribute matches the regex.                   |
-| `.count_lt`  | Matches every item where the attribute count is less than the given number                |
-| `.count_lte` | Matches every item where the attribute count is less than the given number                |
-| `.count_gt`  | Matches every item where the attribute count is greater than the given number             |
-| `.count_gte` | Matches every item where the attribute count is greater than or equal to the given number |
+=== "Number Filters"
+    
+    **Modifiers:** No Modifier, `.not`, `.gt`, `.gte`, `.lt`, or `.lte`
+    
+    Number filters can **NOT** take multiple values.
+    
+    ### Number Filter Attributes
+    
+    <div class="annotate" markdown>
 
-### Attribute
+    | Number Filters         | Description                                                                                                                                                                   | Allowed Media                                                                              |
+    | :--------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------- |
+    | `aspect`(15)           | Uses the aspect attribute to match<br>minimum: `0.0`                                                                                                                          | `Movies`<br>`Shows`(16)<br>`Seasons`(17)<br>`Episodes`                                           |
+    | `audience_rating`      | Uses the audience rating attribute to match<br>`0.0` - `10.0`                                                                                                                 | `Movies`<br>`Shows`<br>`Episodes`                                                              |
+    | `channels`(6)          | Uses the audio channels attribute to match<br>minimum: `0`                                                                                                                    | `Movies`<br>`Shows`(7)<br>`Seasons`(8)<br>`Episodes`                                             |
+    | `critic_rating`        | Uses the critic rating attribute to match<br>`0.0` - `10.0`                                                                                                                   | `Movies`<br>`Shows`<br>`Episodes`<br>`Albums`                                                    |
+    | `duration`             | Uses the duration attribute to match using minutes<br>minimum: `0`                                                                                                            | `Movies`<br>`Shows`<br>`Episodes`<br>`Tracks`                                                    |
+    | `height`(9)            | Uses the height attribute to match<br>minimum: `0`                                                                                                                            | `Movies`<br>`Shows`(10)<br>`Seasons`(11)<br>`Episodes`                                           |
+    | `plays`                | Uses the plays attribute to match<br>minimum: `1`                                                                                                                             | `Movies`<br>`Shows`<br>`Seasons`,<br>`Episodes`<br>`Artists`<br>`Albums`<br>`Tracks`                 |
+    | `stinger_rating`(23)   | Uses the [Mediastinger](http://www.mediastinger.com/) rating to match.<br>The media stinger rating is if the after/during credits scene is worth staying for.<br>minimum: `0` | `Movies`                                                                                   |
+    | `tmdb_vote_average`(5) | Uses the tmdb vote average rating to match<br>minimum: `0.0`                                                                                                                  | `Movies`<br>`Shows`                                                                          |
+    | `tmdb_vote_count`(4)   | Uses the tmdb vote count to match<br>minimum: `1`                                                                                                                             | `Movies`<br>`Shows`                                                                          |
+    | `tmdb_year`(2)(3)      | Uses the year on TMDb to match<br>minimum: `1`                                                                                                                                | `Movies`<br>`Shows`                                                                          |
+    | `user_rating`          | Uses the user rating attribute to match<br>`0.0` - `10.0`                                                                                                                     | `Movies`<br>`Shows`<br>`Seasons`,<br>`Episodes`<br>`Artists`<br>`Albums`<br>`Tracks`                 |
+    | `versions`(18)         | Uses the number of versions found to match<br>minimum: `0`                                                                                                                    | `Movies`<br>`Shows`(19)<br>`Seasons`(20),<br>`Episodes`<br>`Artists`(21)<br>`Albums`(22)<br>`Tracks` |
+    | `width`(12)            | Uses the width attribute to match<br>minimum: `0`                                                                                                                             | `Movies`<br>`Shows`(13)<br>`Seasons`(14)<br>`Episodes`                                           |
+    | `year`(1)              | Uses the year attribute to match<br>minimum: `1`                                                                                                                              | `Movies`<br>`Shows`<br>`Seasons`,<br>`Episodes`<br>`Albums`<br>`Tracks`                            |
 
-| Tag Filters                                            | Description                                                                                                                                     |                   Movies                   |                                      Shows                                       |                                     Seasons                                      |                  Episodes                  |                  Artists                   |                   Albums                   |                   Track                    |
-|:-------------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------:|:--------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|
-| `actor`                                                | Uses the actor tags to match                                                                                                                    | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `collection`                                           | Uses the collection tags to match                                                                                                               | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |
-| `content_rating`                                       | Uses the content rating tags to match                                                                                                           | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `network`                                              | Uses the network tags to match                                                                                                                  |  :fontawesome-solid-circle-xmark:{ .red }  |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `country`                                              | Uses the country tags to match                                                                                                                  | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `director`                                             | Uses the director tags to match                                                                                                                 | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `genre`                                                | Uses the genre tags to match                                                                                                                    | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `label`                                                | Uses the label tags to match                                                                                                                    | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |
-| `producer`                                             | Uses the actor tags to match                                                                                                                    | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `year`<sup>**[3](#table-annotations)**</sup>           | Uses the year tag to match                                                                                                                      | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |
-| `writer`                                               | Uses the writer tags to match                                                                                                                   | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `resolution`                                           | Uses the resolution tag to match                                                                                                                | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `audio_language`                                       | Uses the audio language tags to match                                                                                                           | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `subtitle_language`                                    | Uses the subtitle language tags to match                                                                                                        | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `tmdb_genre`<sup>**[2](#table-annotations)**</sup>     | Uses the genres from TMDb to match                                                                                                              | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `tmdb_keyword`<sup>**[2](#table-annotations)**</sup>   | Uses the keywords from TMDb to match                                                                                                            | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `origin_country`<sup>**[2](#table-annotations)**</sup> | Uses TMDb origin country [ISO 3166-1 alpha-2 codes](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) to match<br>Example: `origin_country: us` |  :fontawesome-solid-circle-xmark:{ .red }  |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `tvdb_genre`<sup>**[2](#table-annotations)**</sup>     | Uses the genres from TVDb to match                                                                                                              |  :fontawesome-solid-circle-xmark:{ .red }  |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `imdb_keyword`<sup>**[2](#table-annotations)**</sup>   | Uses the keywords from IMDb to match See [Special](#special-filters) for more attributes                                                        | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
 
-## Boolean Filters
+    </div>
 
-Boolean Filters have no modifiers.
+    1. You can use `current_year` to have Kometa use the current year's value. This can be combined with a `-#` at the end to subtract that number of years. i.e. `current_year-2`  
+    2. Also filters out missing movies/shows from being added to Radarr/Sonarr. These Values also cannot use the `count` modifiers.  
+    3. You can use `current_year` to have Kometa use the current year's value. This can be combined with a `-#` at the end to subtract that number of years. i.e. `current_year-2`  
+    4. Also filters out missing movies/shows from being added to Radarr/Sonarr. These Values also cannot use the `count` modifiers.  
+    5. Also filters out missing movies/shows from being added to Radarr/Sonarr. These Values also cannot use the `count` modifiers.  
+    6. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    7. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    8. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    9. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    10. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    11. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    12. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    13. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    14. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    15. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    16. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    17. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    18. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    19. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    20. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    21. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    22. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    23. The actual numbers are pulled from the [Mediastingers](https://github.com/Kometa-Team/Mediastingers) Repo.  
 
-### Attribute
 
-| Boolean Filters    | Description                                                                                              |                   Movies                   |                                      Shows                                       |                                     Seasons                                      |                  Episodes                  |                  Artists                   |                   Albums                   |                   Track                    |
-|:-------------------|:---------------------------------------------------------------------------------------------------------|:------------------------------------------:|:--------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|
-| `has_collection`   | Matches every item that has or does not have a collection                                                | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |
-| `has_edition`      | Matches every item that has or does not have an edition                                                  | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `has_stinger`      | Matches every item that has a [media stinger](http://www.mediastinger.com/) (After/During Credits Scene) | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `has_dolby_vision` | Matches every item that has or does not have a dolby vision                                              | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `has_overlay`      | Matches every item that has or does not have an overlay                                                  | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |
+    ???+ tip "Number Filter Modifiers"
+    
+        | Number Modifier | Description                                                                                | Format                                            |
+        | :-------------- | :----------------------------------------------------------------------------------------- | :------------------------------------------------ |
+        | No Modifier     | Matches every item where the number attribute is equal to the given number                 | **Format:** number<br>e.g. `30`, `1995`, or `7.5` |
+        | `.gt`           | Matches every item where the number attribute is greater than the given number             | **Format:** number<br>e.g. `30`, `1995`, or `7.5` |
+        | `.gte`          | Matches every item where the number attribute is greater than or equal to the given number | **Format:** number<br>e.g. `30`, `1995`, or `7.5` |
+        | `.lt`           | Matches every item where the number attribute is less than the given number                | **Format:** number<br>e.g. `30`, `1995`, or `7.5` |
+        | `.lte`          | Matches every item where the number attribute is less than or equal to the given number    | **Format:** number<br>e.g. `30`, `1995`, or `7.5` |
+        | `.not`          | Matches every item where the number attribute is not equal to the given number             | **Format:** number<br>e.g. `30`, `1995`, or `7.5` |
+    
+    #### Examples
+        
+    ```yaml
+    collections:
+     9.0 Movies:
+       plex_all: true
+       filters:
+         user_rating.gte: 9
+    ```
+    ```yaml
+    collections:
+     Good Adam Sandler Romantic Comedies:
+       plex_search:
+         all:
+           genre: Romance
+           actor: Adam Sandler
+       filters:
+         genre: Comedy
+         user_rating.gte: 7
+    ```
 
-## Date Filters
+=== "String Filters"
 
-Date filters can be used with either no modifier or with `.not`, `.before`, `.after`, or `.regex`.
+    **Modifiers:** No Modifier, `.not`, `.is`, `.isnot`, `.begins`, `.ends`, or `.regex`
+    
+    String filters can take multiple values **only as a list**.
 
-Date filters can **NOT** take multiple values.
+    ### String Filter Attributes
 
-### Modifier
+    <div class="annotate" markdown>
 
-| Date Modifier | Description                                                           |                                   Format                                   |
-|:--------------|:----------------------------------------------------------------------|:--------------------------------------------------------------------------:|
-| No Modifier   | Matches every item where the date attribute is in the last X days     |                  **Format:** number of days<br>e.g. `30`                   |
-| `.not`        | Matches every item where the date attribute is not in the last X days |                  **Format:** number of days<br>e.g. `30`                   |
-| `.before`     | Matches every item where the date attribute is before the given date  | **Format:** MM/DD/YYYY or `today` for the current day<br>e.g. `01/01/2000` |
-| `.after`      | Matches every item where the date attribute is after the given date   | **Format:** MM/DD/YYYY or `today` for the current day<br>e.g. `01/01/2000` |
-| `.regex`      | Matches every item where the attribute matches the regex given        |                                    N/A                                     |
+    | String Filter          | Description                              | Allowed Media                                                                           |
+    | :--------------------- | :--------------------------------------- | :-------------------------------------------------------------------------------------- |
+    | `audio_codec`(20)      | Uses the audio codec tags to match       | `Movies`<br>`Shows`(21)<br>`Seasons`(22)<br>`Episodes`                                        |
+    | `audio_profile`(23)    | Uses the audio profile tags to match     | `Movies`<br>`Shows`(24)<br>`Seasons`(25)<br>`Episodes`                                        |
+    | `audio_track_title`(9) | Uses the audio track titles to match     | `Movies`<br>`Shows`(10)<br>`Seasons`(11)<br>`Episodes`<br>`Artists`(12)<br>`Albums`(13)<br>`Tracks` |
+    | `edition`              | Uses the edition attribute to match      | `Movies`                                                                                |
+    | `filepath`(4)          | Uses the item's filepath to match        | `Movies`<br>`Shows`(5)<br>`Seasons`(6)<br>`Episodes`<br>`Artists`(7)<br>`Albums`(8)<br>`Tracks`     |
+    | `folder`               | Uses the item's folder to match          | `Shows`<br>`Artists`                                                                      |
+    | `record_label`         | Uses the record label attribute to match | `Albums`                                                                                |
+    | `studio`               | Uses the studio attribute to match       | `Movies`<br>`Shows`                                                                       |
+    | `summary`              | Uses the summary attribute to match      | `Movies`<br>`Shows`<br>`Seasons`<br>`Episodes`<br>`Artists`<br>`Albums`<br>`Tracks`                 |
+    | `title`                | Uses the title attribute to match        | `Movies`<br>`Shows`<br>`Seasons`<br>`Episodes`<br>`Artists`<br>`Albums`<br>`Tracks`                 |
+    | `tmdb_title`(1)        | Uses the title from TMDb to match        | `Movies`<br>`Shows`                                                                       |
+    | `tvdb_status`(3)       | Uses the status from TVDb to match       | `Shows`                                                                                 |
+    | `tvdb_title`(2)        | Uses the title from TVDb to match        | `Shows`                                                                                 |
+    | `video_codec`(14)      | Uses the video codec tags to match       | `Movies`<br>`Shows`(15)<br>`Seasons`(16)<br>`Episodes`                                        |
+    | `video_profile`(17)    | Uses the video profile tags to match     | `Movies`<br>`Shows`(18)<br>`Seasons`(19)<br>`Episodes`                                        |
 
-### Attribute
+    
+    </div>
 
-| Date Filters                                                    | Description                                                                    |                   Movies                   |                   Shows                    |                  Seasons                   |                  Episodes                  |                  Artists                   |                   Albums                   |                   Track                    |
-|:----------------------------------------------------------------|:-------------------------------------------------------------------------------|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|
-| `release`                                                       | Uses the release date attribute (originally available) to match                | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `added`                                                         | Uses the date added attribute to match                                         | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |
-| `last_played`                                                   | Uses the date last played attribute to match                                   | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |
-| `first_episode_aired`<sup>**[2](#table-annotations)**</sup>     | Uses the first episode aired date to match                                     |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `last_episode_aired`<sup>**[2](#table-annotations)</sup>        | Uses the last episode aired date to match                                      |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `last_episode_aired_or_never`<sup>[2](#table-annotations)</sup> | Similar to `last_episode_aired` but also includes those that haven't aired yet |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |
+    1. Also filters out missing movies/shows from being added to Radarr/Sonarr. These Values also cannot use the `count` modifiers.  
+    2. Also filters out missing movies/shows from being added to Radarr/Sonarr. These Values also cannot use the `count` modifiers.  
+    3. Also filters out missing movies/shows from being added to Radarr/Sonarr. These Values also cannot use the `count` modifiers.  
+    4. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    5. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    6. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    7. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    8. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    9. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    10. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    11. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    12. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    13. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    14. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    15. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    16. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    17. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    18. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    19. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    20. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    21. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    22. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    23. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    24. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    25. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
 
-## Number Filters
 
-Number filters must use `.gt`, `.gte`, `.lt`, or `.lte` as a modifier.
+    ???+ tip "String Filter Modifiers"
+    
+        | String Modifier | Description                                                                    |
+        | :-------------- | :----------------------------------------------------------------------------- |
+        | No Modifier     | Matches every item where the attribute contains the given string               |
+        | `.begins`       | Matches every item where the attribute begins with the given string            |
+        | `.ends`         | Matches every item where the attribute ends with the given string              |
+        | `.is`           | Matches every item where the attribute exactly matches the given string        |
+        | `.isnot`        | Matches every item where the attribute does not exactly match the given string |
+        | `.not`          | Matches every item where the attribute does not contain the given string       |
+        | `.regex`        | Matches every item where the attribute matches the regex given                 |
 
-Number filters can **NOT** take multiple values.
+    #### Examples
 
-### Modifier
+    ```yaml
+    collections:
+      Movies with Commentary:
+        plex_all: true
+        filters:
+          audio_track_title: Commentary
+    ```
+    ```yaml
+    collections:
+      Movies with Audio Codecs containing DTS:
+        plex_all: true
+        filters:
+          audio_codec: DTS
+    ```
+=== "Tag Filters"
 
-| Number Modifier | Description                                                                                |                      Format                       |
-|:----------------|:-------------------------------------------------------------------------------------------|:-------------------------------------------------:|
-| No Modifier     | Matches every item where the number attribute is equal to the given number                 | **Format:** number<br>e.g. `30`, `1995`, or `7.5` |
-| `.not`          | Matches every item where the number attribute is not equal to the given number             | **Format:** number<br>e.g. `30`, `1995`, or `7.5` |
-| `.gt`           | Matches every item where the number attribute is greater than the given number             | **Format:** number<br>e.g. `30`, `1995`, or `7.5` |
-| `.gte`          | Matches every item where the number attribute is greater than or equal to the given number | **Format:** number<br>e.g. `30`, `1995`, or `7.5` |
-| `.lt`           | Matches every item where the number attribute is less than the given number                | **Format:** number<br>e.g. `30`, `1995`, or `7.5` |
-| `.lte`          | Matches every item where the number attribute is less than or equal to the given number    | **Format:** number<br>e.g. `30`, `1995`, or `7.5` |
+    **Modifiers:** No Modifier, `.not`, `.regex`, `.count_lt`, `.count_lte`, `.count_gt`, or `.count_gte`
 
-### Attribute
+    Tag filters can take multiple values as a **list or a comma-separated string**.
+    
+    ### Tag Filter Attributes
 
-| Number Filters                                                                          | Description                                                                                                                                                                 |                   Movies                   |                                      Shows                                       |                                     Seasons                                      |                  Episodes                  |                                     Artists                                      |                                      Albums                                      |                   Track                    |
-|:----------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------:|:--------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------:|:------------------------------------------:|:--------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------:|:------------------------------------------:|
-| `year`<sup>**[3](#table-annotations)**</sup>                                            | Uses the year attribute to match<br>minimum: `1`                                                                                                                            | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } |
-| `tmdb_year`<sup>**[2](#table-annotations)**</sup><sup>**[3](#table-annotations)**</sup> | Uses the year on TMDb to match<br>minimum: `1`                                                                                                                              | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `critic_rating`                                                                         | Uses the critic rating attribute to match<br>`0.0` - `10.0`                                                                                                                 | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                    :fontawesome-solid-circle-check:{ .green }                    |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `audience_rating`                                                                       | Uses the audience rating attribute to match<br> `0.0` - `10.0`                                                                                                              | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `user_rating`                                                                           | Uses the user rating attribute to match<br>`0.0` - `10.0`                                                                                                                   | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } |
-| `tmdb_vote_count`<sup>**[2](#table-annotations)**</sup>                                 | Uses the tmdb vote count to match<br>minimum: `1`                                                                                                                           | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `tmdb_vote_average`<sup>**[2](#table-annotations)**</sup>                               | Uses the tmdb vote average rating to match<br>minimum: `0.0`                                                                                                                | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `plays`                                                                                 | Uses the plays attribute to match<br>minimum: `1`                                                                                                                           | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                    :fontawesome-solid-circle-check:{ .green }                    | :fontawesome-solid-circle-check:{ .green } |
-| `duration`                                                                              | Uses the duration attribute to match using minutes<br>minimum: `0`                                                                                                          | :fontawesome-solid-circle-check:{ .green } |                    :fontawesome-solid-circle-check:{ .green }                    |                     :fontawesome-solid-circle-xmark:{ .red }                     | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     | :fontawesome-solid-circle-check:{ .green } |
-| `channels`                                                                              | Uses the audio channels attribute to match<br>minimum: `0`                                                                                                                  | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `height`                                                                                | Uses the height attribute to match<br>minimum: `0`                                                                                                                          | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `width`                                                                                 | Uses the width attribute to match<br>minimum: `0`                                                                                                                           | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `aspect`                                                                                | Uses the aspect attribute to match<br>minimum: `0.0`                                                                                                                        | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |
-| `versions`                                                                              | Uses the number of versions found to match<br>minimum: `0`                                                                                                                  | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green }<sup>**[1](#table-annotations)**</sup> | :fontawesome-solid-circle-check:{ .green } |
-| `stinger_rating`<sup>**[4](#table-annotations)**</sup>                                  | Uses the [media stinger](http://www.mediastinger.com/) rating to match. The media stinger rating is if the after/during credits scene is worth staying for.<br>minimum: `0` | :fontawesome-solid-circle-check:{ .green } |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  |                     :fontawesome-solid-circle-xmark:{ .red }                     |                     :fontawesome-solid-circle-xmark:{ .red }                     |  :fontawesome-solid-circle-xmark:{ .red }  | 
+    <div class="annotate" markdown>
 
-## Special Filters
+    | Tag Filters            | Description                                                                                                                                     | Allowed Media                                                              |
+    | :--------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------- |
+    | `actor`                | Uses the actor tags to match                                                                                                                    | `Movies`<br>`Shows`<br>`Episodes`                                              |
+    | `audio_language`(5)    | Uses the audio language tags to match                                                                                                           | `Movies`<br>`Shows`(6)<br>`Seasons`(7)<br>`Episodes`                             |
+    | `collection`           | Uses the collection tags to match                                                                                                               | `Movies`<br>`Shows`<br>`Seasons`,<br>`Episodes`<br>`Artists`<br>`Albums`<br>`Tracks` |
+    | `content_rating`       | Uses the content rating tags to match                                                                                                           | `Movies`<br>`Shows`<br>`Episodes`                                              |
+    | `country`              | Uses the country tags to match                                                                                                                  | `Movies`<br>`Artists`                                                        |
+    | `director`             | Uses the director tags to match                                                                                                                 | `Movies`<br>`Episodes`                                                       |
+    | `genre`                | Uses the genre tags to match                                                                                                                    | `Movies`<br>`Shows`<br>`Artists`<br>`Albums`                                     |
+    | `imdb_keyword`(15)     | Uses the keywords from IMDb to match See [Special](#special-filters) for more attributes                                                        | `Movies`<br>`Shows`                                                          |
+    | `label`                | Uses the label tags to match                                                                                                                    | `Movies`<br>`Shows`<br>`Seasons`,<br>`Episodes`<br>`Artists`<br>`Albums`<br>`Tracks` |
+    | `network`              | Uses the network tags to match                                                                                                                  | `Shows`                                                                    |
+    | `origin_country`(13)   | Uses TMDb origin country [ISO 3166-1 alpha-2 codes](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) to match<br>Example: `origin_country: us` | `Shows`                                                                    |
+    | `producer`             | Uses the actor tags to match                                                                                                                    | `Movies`<br>`Episodes`                                                       |
+    | `resolution`(2)        | Uses the resolution tag to match                                                                                                                | `Movies`<br>`Shows`(3)<br>`Seasons`(4)<br>`Episodes`                             |
+    | `subtitle_language`(8) | Uses the subtitle language tags to match                                                                                                        | `Movies`<br>`Shows`(9)<br>`Seasons`(10)<br>`Episodes`                            |
+    | `tmdb_genre`(11)       | Uses the genres from TMDb to match                                                                                                              | `Movies`<br>`Shows`                                                          |
+    | `tmdb_keyword`(12)     | Uses the keywords from TMDb to match                                                                                                            | `Movies`<br>`Shows`                                                          |
+    | `tvdb_genre`(14)       | Uses the genres from TVDb to match                                                                                                              | `Shows`                                                                    |
+    | `writer`               | Uses the writer tags to match                                                                                                                   | `Movies`<br>`Episodes`                                                       |
+    | `year`(1)              | Uses the year tag to match                                                                                                                      | `Movies`<br>`Shows`<br>`Seasons`,<br>`Episodes`<br>`Albums`<br>`Tracks`            |
 
-Special Filters each have their own set of rules for how they're used.
+    </div>
 
-### Attribute
+    1. You can use `current_year` to have Kometa use the current year's value. This can be combined with a `-#` at the end to subtract that number of years. i.e. `current_year-2`  
+    2. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    3. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    4. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    5. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    6. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    7. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    8. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    9. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    10. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    11. Also filters out missing movies/shows from being added to Radarr/Sonarr. These Values also cannot use the `count` modifiers.  
+    12. Also filters out missing movies/shows from being added to Radarr/Sonarr. These Values also cannot use the `count` modifiers.  
+    13. Also filters out missing movies/shows from being added to Radarr/Sonarr. These Values also cannot use the `count` modifiers.  
+    14. Also filters out missing movies/shows from being added to Radarr/Sonarr. These Values also cannot use the `count` modifiers.  
+    15. Also filters out missing movies/shows from being added to Radarr/Sonarr. These Values also cannot use the `count` modifiers.  
 
-| Special Filters                                                                                                            | Description                                                                                                                                                                                                                                                                                              |                   Movies                   |                   Shows                    |                  Seasons                   |                  Episodes                  |                  Artists                   |                   Albums                   |                  Track                   |
-|:---------------------------------------------------------------------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:------------------------------------------:|:----------------------------------------:|
-| `history`                                                                                                                  | Uses the release date attribute (originally available) to match dates throughout history<br>`day`: Match the Day and Month to Today's Date<br>`month`: Match the Month to Today's Date<br>`1-30`: Match the Day and Month to Today's Date or `1-30` days before Today's Date                             | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-xmark:{ .red } |
-| `episodes`                                                                                                                 | Uses the item's episodes attributes to match <br> Use the `percentage` attribute given a number between 0-100 to determine the percentage of an items episodes that must match the sub-filter.                                                                                                           |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-xmark:{ .red } |
-| `seasons`                                                                                                                  | Uses the item's seasons attributes to match <br> Use the `percentage` attribute given a number between 0-100 to determine the percentage of an items seasons that must match the sub-filter.                                                                                                             |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-xmark:{ .red } |
-| `tracks`                                                                                                                   | Uses the item's tracks attributes to match <br> Use the `percentage` attribute given a number between 0-100 to determine the percentage of an items tracks that must match the sub-filter.                                                                                                               |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-xmark:{ .red } |
-| `albums`                                                                                                                   | Uses the item's albums attributes to match <br> Use the `percentage` attribute given a number between 0-100 to determine the percentage of an items albums that must match the sub-filter.                                                                                                               |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-xmark:{ .red } |
-| `original_language`<sup>**[2](#table-annotations)**</sup><br>`original_language.not`<sup>**[2](#table-annotations)**</sup> | Uses TMDb original language [ISO 639-1 codes](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) to match<br>Example: `original_language: en, ko`                                                                                                                                                    | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-xmark:{ .red } |
-| `tmdb_status`<sup>**[2](#table-annotations)**</sup><br>`tmdb_status.not`<sup>**[2](#table-annotations)**</sup>             | Uses TMDb Status to match<br>**Values:** `returning`, `planned`, `production`, `ended`, `canceled`, `pilot`                                                                                                                                                                                              |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-xmark:{ .red } |
-| `tmdb_type`<sup>**[2](#table-annotations)**</sup><br>`tmdb_type.not`<sup>**[2](#table-annotations)**</sup>                 | Uses TMDb Type to match<br>**Values:** `documentary`, `news`, `production`, `miniseries`, `reality`, `scripted`, `talk_show`, `video`                                                                                                                                                                    |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-xmark:{ .red } |
-| `imdb_keyword`<sup>**[2](#table-annotations)**</sup><sup>**[5](#table-annotations)**</sup>                                 | Uses the keywords from IMDb to match<br>`keywords`: list of keywords to match<br>`minimum_votes`: minimum number of votes keywords must have<br>`minimum_relevant`: minimum number of relevant votes keywords must have<br>`minimum_percentage`: minimum percentage of relevant votes keywords must have | :fontawesome-solid-circle-check:{ .green } | :fontawesome-solid-circle-check:{ .green } |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  |  :fontawesome-solid-circle-xmark:{ .red }  | :fontawesome-solid-circle-xmark:{ .red } |
+    ???+ tip "Tag Filter Modifiers"
+    
+        | Tag Modifier | Description                                                                               |
+        | :----------- | :---------------------------------------------------------------------------------------- |
+        | No Modifier  | Matches every item where the attribute matches the given string                           |
+        | `.count_gt`  | Matches every item where the attribute count is greater than the given number             |
+        | `.count_gte` | Matches every item where the attribute count is greater than or equal to the given number |
+        | `.count_lt`  | Matches every item where the attribute count is less than the given number                |
+        | `.count_lte` | Matches every item where the attribute count is less than the given number                |
+        | `.not`       | Matches every item where the attribute does not match the given string                    |
+        | `.regex`     | Matches every item where one value of this attribute matches the regex.                   |
 
-## Table Annotations
+    #### Examples
+    
+    ```yaml
+    collections:
+     Daniel Craig only James Bonds:
+       imdb_list:
+         list_id: ls006405458
+       filters:
+         actor: Daniel Craig
+    ```
+    ```yaml
+    collections:
+     French Romance:
+       plex_search:
+         all:
+           genre: Romance
+       filters:
+         audio_language: Français
+    ```
 
-<sup>**1**</sup> Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).
 
-<sup>**2**</sup> Also filters out missing movies/shows from being added to Radarr/Sonarr. These Values also cannot use the `count` modifiers.
+=== "Special Filters"
 
-<sup>**3**</sup> You can use `current_year` to have Kometa use the current years value. This can be combined with a `-#` at the end to subtract that number of years. i.e. `current_year-2`
+    Special Filters each have their own set of rules for how they're used.
+    
+    ### Attribute
 
-<sup>**4**</sup> The actual numbers are pulled from the [Mediastingers](https://github.com/Kometa-Team/Mediastingers) Repo.
+    <div class="annotate" markdown>
 
-<sup>**5**</sup> Also is a Tag Filter and can use all of those modifiers.
+    | Special Filters                                      | Description                                                                                                                                                                                                                                                                                              | Allowed Media                           |
+    | :--------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------- |
+    | `albums`                                             | Uses the item's albums attributes to match<br>Use the `percentage` attribute given a number between 0-100 to determine the percentage of an item's albums that must match the sub-filter.                                                                                                                | `Artists`                               |
+    | `episodes`                                           | Uses the item's episodes attributes to match<br>Use the `percentage` attribute given a number between 0-100 to determine the percentage of an item's episodes that must match the sub-filter.                                                                                                            | `Shows`<br>`Seasons`                      |
+    | `history`                                            | Uses the release date attribute (originally available) to match dates throughout history<br>`day`: Match the Day and Month to Today's Date<br>`month`: Match the Month to Today's Date<br>`1-30`: Match the Day and Month to Today's Date or `1-30` days before                                          | `Movies`<br>`Shows`<br>`Episodes`<br>`Albums` |
+    | `imdb_keyword`(7)(8)                                 | Uses the keywords from IMDb to match<br>`keywords`: list of keywords to match<br>`minimum_votes`: minimum number of votes keywords must have<br>`minimum_relevant`: minimum number of relevant votes keywords must have<br>`minimum_percentage`: minimum percentage of relevant votes keywords must have | `Movies`<br>`Shows`                       |
+    | `original_language`(1)<br>`original_language.not`(2) | Uses TMDb original language [ISO 639-1 codes](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) to match<br>Example: `original_language: en, ko`                                                                                                                                                    | `Movies`<br>`Shows`                       |
+    | `seasons`                                            | Uses the item's seasons attributes to match<br>Use the `percentage` attribute given a number between 0-100 to determine the percentage of an item's seasons that must match the sub-filter.                                                                                                              | `Shows`                                 |
+    | `tmdb_status`(3)<br>`tmdb_status.not`(4)             | Uses TMDb Status to match<br>**Values:** `returning`, `planned`, `production`, `ended`, `canceled`, `pilot`                                                                                                                                                                                              | `Shows`                                 |
+    | `tmdb_type`(5)<br>`tmdb_type.not`(6)                 | Uses TMDb Type to match<br>**Values:** `documentary`, `news`, `production`, `miniseries`, `reality`, `scripted`, `talk_show`, `video`                                                                                                                                                                    | `Shows`                                 |
+    | `tracks`                                             | Uses the item's tracks attributes to match<br>Use the `percentage` attribute given a number between 0-100 to determine the percentage of an item's tracks that must match the sub-filter.                                                                                                                | `Artists`<br>`Albums`                     |
 
-## Collection Filter Examples
+    </div>
 
-A few examples are listed below:
-
-```yaml
-collections:
-  1080p Documentaries:
-    plex_search:
-      all:
-        genre: Documentary
-    summary: A collection of 1080p Documentaries
-    filters:
-      resolution: 1080
-```
-```yaml
-collections:
-  Daniel Craig only James Bonds:
-    imdb_list:
-      list_id: ls006405458
-    filters:
-      actor: Daniel Craig
-```
-```yaml
-collections:
-  French Romance:
-    plex_search:
-      all:
-        genre: Romance
-    filters:
-      audio_language: Français
-```
-```yaml
-collections:
-  Romantic Comedies:
-    plex_search:
-      all:
-        genre: Romance
-    filters:
-      genre: Comedy
-```
-```yaml
-collections:
-  9.0 Movies:
-    plex_all: true
-    filters:
-      user_rating.gte: 9
-```
-```yaml
-collections:
-  Summer 2020 Movies:
-    plex_all: true
-    filters:
-      release.after: 5/1/2020
-      release.before: 8/31/2020
-```
-```yaml
-collections:
-  Movies Released in the Last 180 Days:
-    plex_all: true
-    filters:
-      release: 180
-```
-```yaml
-collections:
-  Good Adam Sandler Romantic Comedies:
-    plex_search:
-      all:
-        genre: Romance
-        actor: Adam Sandler
-    filters:
-      genre: Comedy
-      user_rating.gte: 7
-```
-```yaml
-collections:
-  Movies with Commentary:
-    plex_all: true
-    filters:
-      audio_track_title: Commentary
-```
+    1. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    2. Filters using the special `episodes`/`tracks` [filter](#special-filters) with the [default percent](settings.md).  
+    3. Also filters out missing movies/shows from being added to Radarr/Sonarr. These Values also cannot use the `count` modifiers.  
+    4. Also filters out missing movies/shows from being added to Radarr/Sonarr. These Values also cannot use the `count` modifiers.  
+    5. Also filters out missing movies/shows from being added to Radarr/Sonarr. These Values also cannot use the `count` modifiers.  
+    6. Also filters out missing movies/shows from being added to Radarr/Sonarr. These Values also cannot use the `count` modifiers.  
+    7. Also filters out missing movies/shows from being added to Radarr/Sonarr. These Values also cannot use the `count` modifiers.  
+    8. Also is a Tag Filter and can use all of those modifiers.  
+    
+    #### Examples
+    
+    ```yaml
+    collections:
+     Shows That Finished Too Soon:
+       plex_all: true
+       filters:
+         tmdb_status: canceled
+    ```
+    ```yaml
+    collections:
+     On This Day in Previous Years:
+       plex_all: true
+       filters:
+         history: day
+    ```

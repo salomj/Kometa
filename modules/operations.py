@@ -71,8 +71,9 @@ class Operations:
 
             less_check = True
             if less_in is not None:
-                less_check = col_in.childCount < less_in
-                logger.trace(f"{col_in.title} - collection size: {col_in.childCount} < less: {less_in}, DELETE: {less_check}")
+                col_count = col_in.childCount if col_in.childCount is not None else 0
+                less_check = col_count < less_in
+                logger.trace(f"{col_in.title} - collection size: {col_count} < less: {less_in}, DELETE: {less_check}")
 
             managed_check = True
             if managed_in is not None:
@@ -159,7 +160,7 @@ class Operations:
                             parental_labels = []
                         else:
                             parental_guide = self.config.IMDb.parental_guide(imdb_id)
-                            parental_labels = [f"{k.capitalize()}:{v}" for k, v in parental_guide.items() if v not in util.parental_levels[self.library.mass_imdb_parental_labels]]
+                            parental_labels = [f"{k}:{v}" for k, v in parental_guide.items() if v and v not in util.parental_levels[self.library.mass_imdb_parental_labels]]
                         add_labels = [la for la in parental_labels if la not in current_labels]
                         remove_labels = [la for la in current_labels if la in util.parental_labels and la not in parental_labels]
                         for label_list, edit_type in [(add_labels, "add"), (remove_labels, "remove")]:
@@ -373,8 +374,8 @@ class Operations:
                                         found_rating = tmdb_obj().vote_average # noqa
                                     elif option == "imdb":
                                         found_rating = self.config.IMDb.get_rating(imdb_id)
-                                    elif option == "omdb":
-                                        found_rating = omdb_obj().imdb_rating # noqa
+                                    elif option == "trakt":
+                                        found_rating = self.config.Trakt.get_rating(imdb_id, self.library.is_movie)
                                     elif option == "trakt_user":
                                         _ratings = trakt_ratings()
                                         _id = tmdb_id if self.library.is_movie else tvdb_id
@@ -382,6 +383,20 @@ class Operations:
                                             found_rating = _ratings[_id]
                                         else:
                                             raise Failed
+                                    elif str(option).startswith("plex"):
+                                        ratings = self.library.get_ratings(item)
+                                        try:
+                                            found_rating = ratings[option] # noqa
+                                        except KeyError:
+                                            found_rating = None
+                                    elif str(option).startswith("omdb"):
+                                        omdb_item = omdb_obj()
+                                        if option == "omdb_metascore":
+                                            found_rating = omdb_item.metacritic_rating / 10 if omdb_item.metacritic_rating else None # noqa
+                                        elif option == "omdb_tomatoes":
+                                            found_rating = omdb_item.rotten_tomatoes / 10 if omdb_item.rotten_tomatoes else None # noqa
+                                        else:
+                                            found_rating = omdb_item.imdb_rating # noqa
                                     elif str(option).startswith("mdb"):
                                         mdb_item = mdb_obj()
                                         if option == "mdb_average":
@@ -800,18 +815,44 @@ class Operations:
                     try:
                         new_poster, new_background, item_dir, name = self.library.find_item_assets(item)
                     except Failed:
-                        item_dir = None
-                        name = None
-                        new_poster = None
-                        new_background = None
+                        new_poster, new_background, item_dir, name = None, None, None, None
                     try:
                         tmdb_item = tmdb_obj()
                     except Failed:
                         tmdb_item = None
+
                     if self.library.mass_poster_update:
-                        self.library.poster_update(item, new_poster, tmdb=tmdb_item.poster_url if tmdb_item else None, title=item.title) # noqa
+                        source = self.library.mass_poster_update["source"]
+                        ignore_locked = self.library.mass_poster_update["ignore_locked"]
+                        ignore_overlays = self.library.mass_poster_update.get("ignore_overlays")
+                        thumb_locked = any(f.name == "thumb" and f.locked for f in item.fields)
+                        labels = [la.tag for la in self.library.item_labels(item)]
+                        has_overlay_label = "Overlay" in labels
+                        
+                        # Bypass ignore_locked and ignore_overlays checks if the source is "unlock" or "lock"
+                        if source in ["unlock", "lock"]:
+                            self.library.poster_update(item, new_poster, tmdb=tmdb_item.poster_url if tmdb_item else None, title=item.title)  # noqa
+                        elif ignore_locked and thumb_locked:
+                            # Skip processing if ignore_locked is True and thumb is locked
+                            pass
+                        elif ignore_overlays and has_overlay_label:
+                            # Skip processing if ignore_overlays is True and Overlay label is found
+                            pass
+                        else:
+                            self.library.poster_update(item, new_poster, tmdb=tmdb_item.poster_url if tmdb_item else None, title=item.title)  # noqa
+
                     if self.library.mass_background_update:
-                        self.library.background_update(item, new_background, tmdb=tmdb_item.backdrop_url if tmdb_item else None, title=item.title) # noqa
+                        source = self.library.mass_background_update["source"]
+                        ignore_locked = self.library.mass_background_update["ignore_locked"]
+                        ignore_overlays = self.library.mass_background_update["ignore_overlays"]
+                        art_locked = any(f.name == "art" and f.locked for f in item.fields)
+
+                        if source in ["unlock", "lock"]:
+                            self.library.background_update(item, new_background, tmdb=tmdb_item.backdrop_url if tmdb_item else None, title=item.title) # noqa
+
+                        elif not (ignore_locked and art_locked):
+                            self.library.background_update(item, new_background, tmdb=tmdb_item.backdrop_url if tmdb_item else None, title=item.title) # noqa
+
 
                     if self.library.is_show and (
                             (self.library.mass_poster_update and
@@ -882,7 +923,7 @@ class Operations:
 
                     for ep in item.episodes():
                         ep = self.library.reload(ep)
-                        item_title = self.library.get_item_sort_title(ep, atr="title")
+                        item_title = self.library.get_item_display_title(ep)
                         logger.info("")
                         logger.info(f"Processing {item_title}")
                         item_edits = ""
@@ -922,6 +963,12 @@ class Operations:
                                             except Failed:
                                                 tmdb_item = None
                                             found_rating = None
+                                            if str(option).startswith("plex"):
+                                                ratings = self.library.get_ratings(ep)
+                                                try:
+                                                    found_rating = ratings[option]  # noqa
+                                                except KeyError:
+                                                    found_rating = None
                                             if tmdb_item and option == "tmdb":
                                                 try:
                                                     found_rating = self.config.TMDb.get_episode(tmdb_item.tmdb_id, ep.seasonNumber, ep.episodeNumber).vote_average  # noqa
@@ -929,6 +976,8 @@ class Operations:
                                                     logger.error(er)
                                             elif imdb_id and option == "imdb":
                                                 found_rating = self.config.IMDb.get_episode_rating(imdb_id, ep.seasonNumber, ep.episodeNumber)
+                                            elif imdb_id and option == "trakt":
+                                                found_rating = self.config.Trakt.get_episode_rating(imdb_id, ep.seasonNumber, ep.episodeNumber)
                                             else:
                                                 try:
                                                     found_rating = float(option)
@@ -956,7 +1005,7 @@ class Operations:
 
             def get_batch_info(placement, total, display_attr, total_count, display_value=None, is_episode=False, out_type=None, tag_type=None):
                 return f"Batch {name_display[display_attr] if display_attr in name_display else display_attr.capitalize()} Update ({placement}/{total}): " \
-                       f"{f'{out_type.capitalize()}ing ' if out_type else ''}" \
+                       f"{f'{out_type.capitalize()} ' if out_type else ''}" \
                        f"{f'Adding {display_value} to ' if tag_type == 'add' else f'Removing {display_value} from ' if tag_type == 'remove' else ''}" \
                        f"{total_count} {'Episode' if is_episode else 'Movie' if self.library.is_movie else 'Show'}" \
                        f"{'s' if total_count > 1 else ''}{'' if out_type or tag_type else f' updated to {display_value}'}"
@@ -971,7 +1020,7 @@ class Operations:
                         self.library.Plex.saveMultiEdits()
 
             for item_attr, _edits in rating_edits.items():
-                _size = len(rating_edits.items())
+                _size = len(_edits.items())
                 for i, (new_rating, rating_keys) in enumerate(sorted(_edits.items()), 1):
                     logger.info(get_batch_info(i, _size, item_attr, len(rating_keys), display_value=new_rating))
                     self.library.Plex.batchMultiEdits(self.library.load_list_from_cache(rating_keys))
@@ -1121,6 +1170,7 @@ class Operations:
             less = self.library.delete_collections["less"] if self.library.delete_collections and self.library.delete_collections["less"] is not None else None
             managed = self.library.delete_collections["managed"] if self.library.delete_collections else None
             configured = self.library.delete_collections["configured"] if self.library.delete_collections else None
+            ignore_smart = self.library.delete_collections["ignore_empty_smart_collections"] if self.library.delete_collections else True
             unmanaged_collections = []
             unconfigured_collections = []
             all_collections = self.library.get_all_collections()
@@ -1129,7 +1179,7 @@ class Operations:
                 col = self.library.reload(col, force=True)
                 labels = [la.tag for la in self.library.item_labels(col)]
 
-                if should_be_deleted(col, labels, configured, managed, less):
+                if should_be_deleted(col, labels, configured, managed, None if col.smart and ignore_smart else less):
                     try:
                         self.library.delete(col)
                         logger.info(f"{col.title} Deleted")

@@ -14,7 +14,7 @@ urls = {
     "popular": f"{base_url}/latest/anime/popular/?h=1",
     "relation": "/relation/graph",
     "tag": f"{base_url}/tag",
-    "login": f"{base_url}/perl-bin/animedb.pl"
+    "login": f"{base_url}/perl-bin/animedb.pl",
 }
 weights = {"anidb": 1000, "anidb_3_0": 600, "anidb_2_5": 500, "anidb_2_0": 400, "anidb_1_5": 300, "anidb_1_0": 200, "anidb_0_5": 100}
 LANGUAGE_MATCHER = {
@@ -96,6 +96,7 @@ LANGUAGE_MATCHER = {
     "X-UNK" : "UNKNOWN",
     "X-OTHER" : "OTHER"
 }
+
 
 class AniDBObj:
     def __init__(self, anidb, anidb_id, data, from_json=False):

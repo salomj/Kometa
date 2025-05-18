@@ -55,7 +55,7 @@ class Letterboxd:
         return items
 
     def _tmdb(self, letterboxd_url, language):
-        ids = self._request(letterboxd_url, language, "//a[@data-track-action='TMDb']/@href")
+        ids = self._request(letterboxd_url, language, "//a[@data-track-action='TMDb' or @data-track-action='TMDB']/@href")
         if len(ids) > 0 and ids[0]:
             if "themoviedb.org/movie" in ids[0]:
                 return util.regex_first_int(ids[0], "TMDb Movie ID")
@@ -88,7 +88,7 @@ class Letterboxd:
                 "url": util.parse(err_type, "url", letterboxd_dict, methods=dict_methods, parent="letterboxd_list").strip(),
                 "limit": util.parse(err_type, "limit", letterboxd_dict, methods=dict_methods, datatype="int", parent="letterboxd_list", default=0) if "limit" in dict_methods else 0,
                 "note": util.parse(err_type, "note", letterboxd_dict, methods=dict_methods, parent="letterboxd_list") if "note" in dict_methods else None,
-                "rating": util.parse(err_type, "rating", letterboxd_dict, methods=dict_methods, datatype="int", parent="letterboxd_list", maximum=100, range_split="-") if "rating" in dict_methods else None,
+                "rating": util.parse(err_type, "rating", letterboxd_dict, methods=dict_methods, datatype="int", parent="letterboxd_list", maximum=10, range_split="-") if "rating" in dict_methods else None,
                 "year": util.parse(err_type, "year", letterboxd_dict, methods=dict_methods, datatype="int", parent="letterboxd_list", minimum=1000, maximum=3000, range_split="-") if "year" in dict_methods else None
             }
             if not final["url"].startswith(base_url):
