@@ -79,8 +79,6 @@ class Convert:
                 return self._imdb_to_anidb[imdb_id]
             elif tmdb_movie_id and int(tmdb_movie_id) in self._tmdb_movie_to_anidb:
                 return self._tmdb_movie_to_anidb[int(tmdb_movie_id)]
-            elif tmdb_id and int(tmdb_id) in self._tmdb_movie_to_anidb:
-                return self._tmdb_movie_to_anidb[int(tmdb_id)]
             else:
                 return None
 
