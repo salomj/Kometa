@@ -1540,9 +1540,9 @@ class Plex(Library):
                     tvdb_id = t_id[0]
             if i_id:
                 imdb_id = i_id[0]
-        if not tmdb_id and not tvdb_id:
+        if not tmdb_id and not tvdb_id and not tmdb_show_id:
             tmdb_id = self.get_tmdb_from_map(item)
-        if not tmdb_id and not tvdb_id and self.is_show:
+        if not tmdb_id and not tvdb_id and not tmdb_show_id and self.is_show:
             tvdb_id = self.get_tvdb_from_map(item)
         if not imdb_id:
             imdb_id = self.get_imdb_from_map(item)
