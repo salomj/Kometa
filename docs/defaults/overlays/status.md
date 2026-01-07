@@ -12,14 +12,14 @@ hide:
         "DESCRIPTION": "an overlay on a show detailing its Current Airing Status for all shows in your library"
     }'
 %}
-| AIRING    | `airing`    | `40`   |
-| RETURNING | `returning` | `30`   |
-| CANCELED  | `canceled`  | `20`   |
-| ENDED     | `ended`     | `10`   |
+| AIRING    | `airing`    | `40` |
+| RETURNING | `returning` | `30` |
+| CANCELED  | `canceled`  | `20` |
+| ENDED     | `ended`     | `10` |
 
 {% 
     include-markdown "./../../templates/defaults/base/mid.md" 
-    replace='{"CODE_NAME": "status", "collection_files": "overlay_files"}' 
+    replace='{"CODE_NAME": "status", "collection_files": "overlay_files", "collections:": "overlays:"}' 
     include-tags='all|show'
 %}
     ```yaml
@@ -32,7 +32,6 @@ hide:
     ```
 
     1.  Changes the text for the canceled overlay to "C A N C E L L E D"
-
 
 
 {% 
@@ -57,7 +56,7 @@ hide:
 
     {% include-markdown "./../../templates/variable_list.md" include-tags="sup1" rewrite-relative-urls=false %}
 
-{% include-markdown "./../../templates/defaults/base/overlays/shared.md" %}
+{% include-markdown "./../../templates/defaults/base/overlays/shared.md" replace='{"CODE_NAME": "status"}' %}
 {% include-markdown "./../../templates/defaults/base/values.md" rewrite-relative-urls=false %}
 
     === "Status Overlays"

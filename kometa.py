@@ -1082,6 +1082,7 @@ def run_playlists(config):
                     status[mapping_name]["status"] = delete_status
 
                 if builder.do_missing and (len(builder.missing_movies) > 0 or len(builder.missing_shows) > 0):
+                    builder.is_playlist = True
                     radarr_add, sonarr_add = builder.run_missing()
                     stats["radarr"] += radarr_add
                     status[mapping_name]["radarr"] += radarr_add
@@ -1166,7 +1167,7 @@ if __name__ == "__main__":
         if run_args["run"] or run_args["tests"] or run_args["run-collections"] or run_args["run-libraries"] or run_args["run-files"] or run_args["resume"]:
             process({"collections": run_args["run-collections"], "libraries": run_args["run-libraries"], "files": run_args["run-files"]})
         else:
-            times_to_run = util.get_list(run_args["times"])
+            times_to_run = util.get_list_bar_then_comma(run_args["times"])
             valid_times = []
             for time_to_run in times_to_run:
                 try:

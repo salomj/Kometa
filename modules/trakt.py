@@ -42,11 +42,12 @@ class Trakt:
         self.read_only = read_only
         self.client_id = params["client_id"]
         self.client_secret = params["client_secret"]
+        self.force_refresh = params["force_refresh"]
         self.pin = params["pin"]
         self.config_path = params["config_path"]
         self.authorization = params["authorization"]
         logger.secret(self.client_secret)
-        if not self._save(self.authorization):
+        if self.force_refresh is True or not self._save(self.authorization):
             if not self._refresh():
                 self._authorization()
         self._slugs = None
@@ -200,12 +201,6 @@ class Trakt:
 
     @retry(stop=stop_after_attempt(6), wait=wait_fixed(10), retry=retry_if_not_exception_type(Failed))
     def _request(self, url, params=None, json_data=None):
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {self.authorization['access_token']}",
-            "trakt-api-version": "2",
-            "trakt-api-key": self.client_id
-        }
         output_json = []
         if params is None:
             params = {}
@@ -217,6 +212,12 @@ class Trakt:
         if json_data:
             logger.trace(f"JSON: {json_data}")
         while current <= pages:
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {self.authorization['access_token']}",
+                "trakt-api-version": "2",
+                "trakt-api-key": self.client_id
+            }
             if pages > 1:
                 params["page"] = current
             if json_data is not None:
@@ -225,16 +226,22 @@ class Trakt:
                 response = self.requests.get(f"{base_url}{url}", headers=headers, params=params)
             if pages == 1 and "X-Pagination-Page-Count" in response.headers and not params:
                 pages = int(response.headers["X-Pagination-Page-Count"])
-            if response.status_code >= 400:
+            if response.status_code == 401:
+                if not self._refresh():
+                    logger.debug(f"Trakt token refresh failure")
+                    raise Failed(f"({response.status_code}) {response.reason}")
+            elif response.status_code >= 400:
+                logger.debug(f"Trakt response issue: ({response.status_code}) {response.reason}")
                 raise Failed(f"({response.status_code}) {response.reason}")
-            response_json = response.json()
-            logger.trace(f"Headers: {response.headers}")
-            logger.trace(f"Response: {response_json}")
-            if isinstance(response_json, dict):
-                return response_json
             else:
-                output_json.extend(response_json)
-            current += 1
+                response_json = response.json()
+                logger.trace(f"Headers: {response.headers}")
+                logger.trace(f"Response: {response_json}")
+                if isinstance(response_json, dict):
+                    return response_json
+                else:
+                    output_json.extend(response_json)
+                current += 1
         return output_json
 
     def user_ratings(self, is_movie):
@@ -259,11 +266,21 @@ class Trakt:
             return lookup[0][media_type]["ids"][to_source]
         raise Failed(f"Trakt Error: No {to_source.upper().replace('B', 'b')} ID found for {from_source.upper().replace('B', 'b')} ID: {external_id}")
 
-    def list_description(self, data):
+    def list_description(self, list_url):
+        if "/official/" in list_url:
+            try:
+                data = self._request(urlparse(list_url).path.replace("/official/", "/"))
+            except Failed:
+                raise Failed(list_url)
+            if "ids" not in data or "trakt" not in data["ids"] or not data["ids"]["trakt"]:
+                raise Failed(f"Trakt Error: Could not extract ID for official list {list_url}")
+            path = f"/lists/{data['ids']['trakt']}"
+        else:
+            path = urlparse(list_url).path
         try:
-            return self._request(urlparse(data).path)["description"]
+            return self._request(path)["description"]
         except Failed:
-            raise Failed(data)
+            raise Failed(list_url)
 
     def _parse(self, items, typeless=False, item_type=None, trakt_ids=False, ignore_other=False):
         ids = []

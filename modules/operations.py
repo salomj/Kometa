@@ -1,4 +1,4 @@
-import os, re
+import math, os, re
 from datetime import datetime, timedelta, timezone
 from modules import plex, util, anidb
 from modules.util import Failed, LimitReached
@@ -21,6 +21,10 @@ name_display = {
     "addedAt": "Added At Date",
     "contentRating": "Content Rating"
 }
+
+def _item_batches(items_iterable, batch_size):
+    for batch_num in range(0, math.ceil(len(items_iterable) / batch_size)):
+        yield items_iterable[batch_num * batch_size:(batch_num + 1) * batch_size]
 
 class Operations:
     def __init__(self, config, library):
@@ -63,6 +67,7 @@ class Operations:
         logger.debug(f"Content Rating Mapper: {self.library.content_rating_mapper}")
         logger.debug(f"Metadata Backup: {self.library.metadata_backup}")
         logger.debug(f"Item Operation: {self.library.items_library_operation}")
+        logger.debug(f"Plex Bulk Edit Batch Size: {self.library.plex_bulk_edit_batch_size}")
         logger.debug("")
 
         def should_be_deleted(col_in, labels_in, configured_in, managed_in, less_in):
@@ -107,7 +112,13 @@ class Operations:
             logger.info(f"{len(tracks)} Tracks Processed; {num_edited} Blank Track Titles Updated")
 
         if self.library.items_library_operation:
+            if self.library.assets_for_all and not self.library.asset_directory:
+                logger.error("Asset Error: No Asset Directory for Assets For All")
+
             items = self.library.get_all()
+            total_items = len(items)
+
+
             radarr_adds = []
             sonarr_adds = []
             label_edits = {"add": {}, "remove": {}}
@@ -126,12 +137,9 @@ class Operations:
             ep_lock_edits = {}
             ep_unlock_edits = {}
 
-            if self.library.assets_for_all and not self.library.asset_directory:
-                logger.error("Asset Error: No Asset Directory for Assets For All")
-
             for i, item in enumerate(items, 1):
                 logger.info("")
-                logger.info(f"Processing: {i}/{len(items)} {item.title}")
+                logger.info(f"({i}/{total_items}) {item.title}")
                 try:
                     item = self.library.reload(item)
                 except Failed as e:
@@ -807,15 +815,15 @@ class Operations:
                                     continue
 
                 if len(item_edits) > 0:
-                    logger.info(f"Item Edits{item_edits}")
+                    logger.info(f"{item_edits[1:]}")
                 else:
                     logger.info("No Item Edits")
 
                 if self.library.mass_poster_update or self.library.mass_background_update:
                     try:
-                        new_poster, new_background, item_dir, name = self.library.find_item_assets(item)
+                        new_poster, new_background, logo, item_dir, name = self.library.find_item_assets(item)
                     except Failed:
-                        new_poster, new_background, item_dir, name = None, None, None, None
+                        new_poster, new_background, logo, item_dir, name = None, None, None, None, None
                     try:
                         tmdb_item = tmdb_obj()
                     except Failed:
@@ -828,7 +836,7 @@ class Operations:
                         thumb_locked = any(f.name == "thumb" and f.locked for f in item.fields)
                         labels = [la.tag for la in self.library.item_labels(item)]
                         has_overlay_label = "Overlay" in labels
-                        
+
                         # Bypass ignore_locked and ignore_overlays checks if the source is "unlock" or "lock"
                         if source in ["unlock", "lock"]:
                             self.library.poster_update(item, new_poster, tmdb=tmdb_item.poster_url if tmdb_item else None, title=item.title)  # noqa
@@ -870,7 +878,7 @@ class Operations:
                             if (self.library.mass_poster_update and self.library.mass_poster_update["seasons"]) or \
                                     (self.library.mass_background_update and self.library.mass_background_update["seasons"]):
                                 try:
-                                    season_poster, season_background, _, _ = self.library.find_item_assets(season, item_asset_directory=item_dir, folder_name=name)
+                                    season_poster, season_background, _, _, _ = self.library.find_item_assets(season, item_asset_directory=item_dir, folder_name=name)
                                 except Failed:
                                     season_poster = None
                                     season_background = None
@@ -899,7 +907,7 @@ class Operations:
                                         logger.error(f"S{season.seasonNumber}E{episode.episodeNumber} {episode.title} Failed to Reload from Plex")
                                         continue
                                     try:
-                                        episode_poster, episode_background, _, _ = self.library.find_item_assets(episode, item_asset_directory=item_dir, folder_name=name)
+                                        episode_poster, episode_background, _, _, _ = self.library.find_item_assets(episode, item_asset_directory=item_dir, folder_name=name)
                                     except Failed:
                                         episode_poster = None
                                         episode_background = None
@@ -925,7 +933,7 @@ class Operations:
                         ep = self.library.reload(ep)
                         item_title = self.library.get_item_display_title(ep)
                         logger.info("")
-                        logger.info(f"Processing {item_title}")
+                        logger.info(f"{item_title}")
                         item_edits = ""
 
                         for attribute, item_attr in episode_ops:
@@ -984,7 +992,7 @@ class Operations:
                                                 except ValueError:
                                                     pass
                                             if not found_rating:
-                                                logger.info(f"No {option} {name_display[item_attr]} Found")
+                                                logger.info(f"  No {option} {name_display[item_attr]} Found")
                                                 raise Failed
                                             found_rating = f"{float(found_rating):.1f}"
                                             if str(current) != found_rating:
@@ -997,136 +1005,70 @@ class Operations:
                                             continue
 
                         if len(item_edits) > 0:
-                            logger.info(f"Item Edits:{item_edits}")
+                            logger.info(f"{item_edits[1:]}")
 
             logger.info("")
-            logger.separator("Batch Updates", space=False, border=False)
+            logger.separator("Plex Updates", space=False, border=False)
             logger.info("")
-
-            def get_batch_info(placement, total, display_attr, total_count, display_value=None, is_episode=False, out_type=None, tag_type=None):
-                return f"Batch {name_display[display_attr] if display_attr in name_display else display_attr.capitalize()} Update ({placement}/{total}): " \
-                       f"{f'{out_type.capitalize()} ' if out_type else ''}" \
-                       f"{f'Adding {display_value} to ' if tag_type == 'add' else f'Removing {display_value} from ' if tag_type == 'remove' else ''}" \
-                       f"{total_count} {'Episode' if is_episode else 'Movie' if self.library.is_movie else 'Show'}" \
-                       f"{'s' if total_count > 1 else ''}{'' if out_type or tag_type else f' updated to {display_value}'}"
-
-            for tag_attribute, edit_dict in [("Label", label_edits), ("Genre", genre_edits)]:
-                for edit_type, batch_edits in edit_dict.items():
-                    _size = len(batch_edits.items())
-                    for i, (tag_name, rating_keys) in enumerate(sorted(batch_edits.items()), 1):
-                        logger.info(get_batch_info(i, _size, tag_attribute, len(rating_keys), display_value=tag_name, tag_type=edit_type))
-                        self.library.Plex.batchMultiEdits(self.library.load_list_from_cache(rating_keys))
-                        getattr(self.library.Plex, f"{edit_type}{tag_attribute}")(tag_name)
-                        self.library.Plex.saveMultiEdits()
-
-            for item_attr, _edits in rating_edits.items():
-                _size = len(_edits.items())
-                for i, (new_rating, rating_keys) in enumerate(sorted(_edits.items()), 1):
-                    logger.info(get_batch_info(i, _size, item_attr, len(rating_keys), display_value=new_rating))
-                    self.library.Plex.batchMultiEdits(self.library.load_list_from_cache(rating_keys))
-                    self.library.Plex.editField(item_attr, new_rating)
-                    self.library.Plex.saveMultiEdits()
-
-            _size = len(content_edits.items())
-            for i, (new_rating, rating_keys) in enumerate(sorted(content_edits.items()), 1):
-                logger.info(get_batch_info(i, _size, "contentRating", len(rating_keys), display_value=new_rating))
-                self.library.Plex.batchMultiEdits(self.library.load_list_from_cache(rating_keys))
-                self.library.Plex.editContentRating(new_rating)
-                self.library.Plex.saveMultiEdits()
-
-            _size = len(studio_edits.items())
-            for i, (new_studio, rating_keys) in enumerate(sorted(studio_edits.items()), 1):
-                logger.info(get_batch_info(i, _size, "studio", len(rating_keys), display_value=new_studio))
-                self.library.Plex.batchMultiEdits(self.library.load_list_from_cache(rating_keys))
-                self.library.Plex.editStudio(new_studio)
-                self.library.Plex.saveMultiEdits()
-
-            _size = len(date_edits["originallyAvailableAt"].items())
-            for i, (new_date, rating_keys) in enumerate(sorted(date_edits["originallyAvailableAt"].items()), 1):
-                logger.info(get_batch_info(i, _size, "originallyAvailableAt", len(rating_keys), display_value=new_date))
-                self.library.Plex.batchMultiEdits(self.library.load_list_from_cache(rating_keys))
-                self.library.Plex.editOriginallyAvailable(new_date)
-                self.library.Plex.saveMultiEdits()
 
             epoch = datetime(1970, 1, 1)
-            _size = len(date_edits["addedAt"].items())
-            for i, (new_date, rating_keys) in enumerate(sorted(date_edits["addedAt"].items()), 1):
-                logger.info(get_batch_info(i, _size, "addedAt", len(rating_keys), display_value=new_date))
-                self.library.Plex.batchMultiEdits(self.library.load_list_from_cache(rating_keys))
-                new_date = datetime.strptime(new_date, "%Y-%m-%d")
-                logger.trace(new_date)
-                try:
-                    ts = int(round(new_date.timestamp()))
-                except (TypeError, OSError):
-                    offset = int(datetime(2000, 1, 1, tzinfo=timezone.utc).timestamp() - datetime(2000, 1, 1).timestamp())
-                    ts = int((new_date - epoch).total_seconds()) - offset
-                logger.trace(epoch + timedelta(seconds=ts))
-                self.library.Plex.editAddedAt(ts)
-                self.library.Plex.saveMultiEdits()
-
-            _size = len(remove_edits.items())
-            for i, (field_attr, rating_keys) in enumerate(remove_edits.items(), 1):
-                logger.info(get_batch_info(i, _size, field_attr, len(rating_keys), out_type="remov"))
-                self.library.Plex.batchMultiEdits(self.library.load_list_from_cache(rating_keys))
-                self.library.Plex.editField(field_attr, None, locked=True)
-                self.library.Plex.saveMultiEdits()
-
-            _size = len(reset_edits.items())
-            for i, (field_attr, rating_keys) in enumerate(reset_edits.items(), 1):
-                logger.info(get_batch_info(i, _size, field_attr, len(rating_keys), out_type="reset"))
-                self.library.Plex.batchMultiEdits(self.library.load_list_from_cache(rating_keys))
-                self.library.Plex.editField(field_attr, None, locked=False)
-                self.library.Plex.saveMultiEdits()
-
-            _size = len(lock_edits.items())
-            for i, (field_attr, rating_keys) in enumerate(lock_edits.items(), 1):
-                logger.info(get_batch_info(i, _size, field_attr, len(rating_keys), out_type="lock"))
-                self.library.Plex.batchMultiEdits(self.library.load_list_from_cache(rating_keys))
-                self.library.Plex._edit(**{f"{field_attr}.locked": 1})
-                self.library.Plex.saveMultiEdits()
-
-            _size = len(unlock_edits.items())
-            for i, (field_attr, rating_keys) in enumerate(unlock_edits.items(), 1):
-                logger.info(get_batch_info(i, _size, field_attr, len(rating_keys), out_type="unlock"))
-                self.library.Plex.batchMultiEdits(self.library.load_list_from_cache(rating_keys))
-                self.library.Plex._edit(**{f"{field_attr}.locked": 0})
-                self.library.Plex.saveMultiEdits()
-
-            for item_attr, _edits in ep_rating_edits.items():
+            def plex_update_in_batches(_edits, display_attr=None, out_type=None, tag_type=None, is_episode=None):
                 _size = len(_edits.items())
-                for i, (new_rating, rating_keys) in enumerate(sorted(_edits.items()), 1):
-                    logger.info(get_batch_info(i, _size, item_attr, len(rating_keys), display_value=new_rating, is_episode=True))
-                    self.library.Plex.batchMultiEdits(rating_keys)
-                    self.library.Plex.editField(item_attr, new_rating)
-                    self.library.Plex.saveMultiEdits()
+                for j, (update_value, rating_keys) in enumerate(sorted(_edits.items()), 1):
+                    update_items = rating_keys if is_episode else self.library.load_list_from_cache(rating_keys)
+                    total_update_items = len(update_items)
+                    batch_size = self.library.plex_bulk_edit_batch_size if self.library.plex_bulk_edit_batch_size else total_update_items
+                    num_batches = math.ceil(total_update_items / batch_size)
+                    update_attr = update_value if display_attr is None else name_display[display_attr] if display_attr in name_display else display_attr.capitalize()
+                    display_value = update_value if out_type is None else None
+                    item_type_name = f"{'Episode' if is_episode else 'Movie' if self.library.is_movie else 'Show'}{'s' if total_update_items > 1 else ''}"
+                    logger.info(f"Plex {update_attr} Update ({j}/{_size}): "
+                                f"{f'{out_type.capitalize()} ' if out_type else ''}"
+                                f"{f'Adding {display_value} to ' if tag_type == 'add' else f'Removing {display_value} from ' if tag_type == 'remove' else ''}"
+                                f"{total_update_items} {item_type_name}{'' if out_type or tag_type else f' updated to {display_value}'}")
+                    for batch_num, batch_items in enumerate(_item_batches(update_items, batch_size), 1):
+                        if num_batches > 1:
+                            logger.info(f"    Processing Batch {batch_num}/{num_batches} {len(batch_items)} {item_type_name}")
+                        self.library.Plex.batchMultiEdits(batch_items)
+                        if display_attr == "addedAt":
+                            update_date = datetime.strptime(update_value, "%Y-%m-%d")
+                            try:
+                                update_value = int(round(update_date.timestamp()))
+                            except (TypeError, OSError):
+                                offset = int(datetime(2000, 1, 1, tzinfo=timezone.utc).timestamp() - datetime(2000, 1, 1).timestamp())
+                                update_value = int((update_date - epoch).total_seconds()) - offset
+                        elif isinstance(update_value, datetime):
+                            update_value = update_value.strftime('%Y-%m-%d')
+                        if out_type is not None:
+                            if out_type in ["remove", "reset"]:
+                                self.library.Plex.editField(update_value, None, locked=out_type == "remove")
+                            else:
+                                self.library.Plex._edit(**{f"{update_value}.locked": 1 if out_type == "lock" else 0})
+                        elif tag_type is not None:
+                            self.library.Plex.editTags(display_attr, update_value, remove=tag_type == "remove")
+                        else:
+                            self.library.Plex.editField(display_attr, update_value)
+                        self.library.Plex.saveMultiEdits()
 
-            _size = len(ep_remove_edits.items())
-            for i, (field_attr, rating_keys) in enumerate(ep_remove_edits.items(), 1):
-                logger.info(get_batch_info(i, _size, field_attr, len(rating_keys), is_episode=True, out_type="remov"))
-                self.library.Plex.batchMultiEdits(rating_keys)
-                self.library.Plex.editField(field_attr, None, locked=True)
-                self.library.Plex.saveMultiEdits()
-
-            _size = len(ep_reset_edits.items())
-            for i, (field_attr, rating_keys) in enumerate(ep_reset_edits.items(), 1):
-                logger.info(get_batch_info(i, _size, field_attr, len(rating_keys), is_episode=True, out_type="reset"))
-                self.library.Plex.batchMultiEdits(rating_keys)
-                self.library.Plex.editField(field_attr, None, locked=False)
-                self.library.Plex.saveMultiEdits()
-
-            _size = len(ep_lock_edits.items())
-            for i, (field_attr, rating_keys) in enumerate(ep_lock_edits.items(), 1):
-                logger.info(get_batch_info(i, _size, field_attr, len(rating_keys), is_episode=True, out_type="lock"))
-                self.library.Plex.batchMultiEdits(rating_keys)
-                self.library.Plex._edit(**{f"{field_attr}.locked": 1})
-                self.library.Plex.saveMultiEdits()
-
-            _size = len(ep_unlock_edits.items())
-            for i, (field_attr, rating_keys) in enumerate(ep_unlock_edits.items(), 1):
-                logger.info(get_batch_info(i, _size, field_attr, len(rating_keys), is_episode=True, out_type="unlock"))
-                self.library.Plex.batchMultiEdits(rating_keys)
-                self.library.Plex._edit(**{f"{field_attr}.locked": 0})
-                self.library.Plex.saveMultiEdits()
+            for tag_attribute, edit_dict in [("label", label_edits), ("genre", genre_edits)]:
+                for tag_operation, batch_edits in edit_dict.items():
+                        plex_update_in_batches(batch_edits, display_attr=tag_attribute, tag_type=tag_operation)
+            for item_attr, rt_edits in rating_edits.items():
+                plex_update_in_batches(rt_edits, item_attr)
+            plex_update_in_batches(content_edits, display_attr="contentRating")
+            plex_update_in_batches(studio_edits, display_attr="studio")
+            plex_update_in_batches(date_edits["originallyAvailableAt"], display_attr="originallyAvailableAt")
+            plex_update_in_batches(date_edits["addedAt"], display_attr="addedAt")
+            plex_update_in_batches(remove_edits, out_type="remove")
+            plex_update_in_batches(reset_edits, out_type="reset")
+            plex_update_in_batches(lock_edits, out_type="lock")
+            plex_update_in_batches(unlock_edits, out_type="unlock")
+            for item_attr, ep_edits in ep_rating_edits.items():
+                plex_update_in_batches(ep_edits, item_attr, is_episode=True)
+            plex_update_in_batches(ep_remove_edits, out_type="remove", is_episode=True)
+            plex_update_in_batches(ep_reset_edits, out_type="reset", is_episode=True)
+            plex_update_in_batches(ep_lock_edits, out_type="lock", is_episode=True)
+            plex_update_in_batches(ep_unlock_edits, out_type="unlock", is_episode=True)
 
             if self.library.Radarr and self.library.radarr_add_all_existing:
                 logger.info("")
@@ -1145,6 +1087,8 @@ class Operations:
                     self.library.Sonarr.add_tvdb(sonarr_adds)
                 except Failed as e:
                     logger.error(e)
+
+            logger.info("")
 
         if self.library.radarr_remove_by_tag:
             logger.info("")
@@ -1223,7 +1167,7 @@ class Operations:
                 logger.info("")
                 for col in unconfigured_collections:
                     try:
-                        poster, background, item_dir, name = self.library.find_item_assets(col)
+                        poster, background, _, item_dir, name = self.library.find_item_assets(col)
                         if poster or background:
                             self.library.upload_images(col, poster=poster, background=background)
                         elif self.library.show_missing_assets:
@@ -1270,6 +1214,7 @@ class Operations:
                     if "year" in mv:
                         special_names[f"{mv['title']} ({mv['year']})"] = mk
             items = self.library.get_all(load=True)
+            total_items = len(items)
             titles = []
             year_titles = []
             for item in items:
@@ -1277,7 +1222,7 @@ class Operations:
                 if isinstance(item, (Movie, Show)):
                     year_titles.append(f"{item.title} ({item.year})")
             for i, item in enumerate(items, 1):
-                logger.ghost(f"Processing: {i}/{len(items)} {item.title}")
+                logger.ghost(f"({i}/{total_items}) {item.title}")
                 map_key, attrs = self.library.get_locked_attributes(item, titles, year_titles)
                 if map_key in special_names:
                     map_key = special_names[map_key]

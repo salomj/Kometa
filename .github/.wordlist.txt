@@ -1,15 +1,19 @@
 aac
 accessmodes
+ACL
 addon
 addons
 adlib
 afi's
 amblin
+amc
 analytics
 anidb
 anidb's
 anilist
 anilist's
+anonfawkes
+antwanchild
 api
 apikey
 apis
@@ -19,6 +23,7 @@ appletv
 arrapi
 arrowverse
 atmos
+atres
 avenir
 bafta
 bambara
@@ -32,6 +37,7 @@ bitrateh
 bitratel
 boing
 boolean
+bosch
 boxofficemojo
 bpjm
 britbox
@@ -62,6 +68,7 @@ césar
 d'or
 dbader
 de
+death
 deathday
 deneuve
 desc
@@ -69,6 +76,7 @@ deva
 diiivoy
 diiivoycolor
 dir
+dicussed
 diskstation
 disneytoon
 dk
@@ -96,6 +104,7 @@ ffffff
 fi
 filepath
 filetype
+filmin
 flac
 flixpatrol
 fontawesome
@@ -103,6 +112,7 @@ fribb
 fsk
 galician
 generalizable
+GID
 github
 githubusercontent
 gitpython
@@ -147,6 +157,7 @@ jinja
 jkirkcaldy
 johnfawkes
 jonnywong
+joost
 jpeg
 jpg
 json
@@ -201,7 +212,9 @@ mojo
 mojo's
 monetization
 mossi
+movistar
 mpaa
+mrbuckwheet
 mx
 myanimelist
 myanimelist's
@@ -214,6 +227,7 @@ mza
 namespace
 nas
 natively
+ncis
 nfr
 nitsua
 nl
@@ -235,6 +249,7 @@ oscar
 osx
 ozzy
 palme
+paradise
 pathing
 pathvalidate
 pca
@@ -243,11 +258,13 @@ persistentvolumeclaim
 pgid
 pkkid
 planetrocky
+player
 plex
 plex's
 plexapi
 plexcollection
 plexposters
+plus+
 png
 pokémon
 popeadam
@@ -268,9 +285,11 @@ radarr
 rainbowindent
 razzie
 razzies
+reacher
 readme
 readwriteonce
 realtime
+reauthenticating
 reciperr
 reddit
 redheadjedi
@@ -288,6 +307,7 @@ runtimeh
 runtimem
 runtimes
 rw
+sandler
 schemas
 sci-fi
 scifi
@@ -302,10 +322,13 @@ skywalker
 sohjiro
 sohjiro's
 sonarr
+spartacus
 ssl
 stevenlu
 stevenlu's
+stonecutter
 subprocess
+sudo
 sundance
 sv
 sxxeyy
@@ -322,6 +345,7 @@ th
 themoviedb
 theposterdb
 thetvdb
+tippy
 tmdb
 tmdb's
 tmdbapi
@@ -331,6 +355,7 @@ toc
 todo
 tomatoesaudience
 tomatometer
+tooltip
 tooltips
 trakt
 trakt's
@@ -338,14 +363,19 @@ transcoded
 transcoding
 trash
 truehd
+TrueNAS
 ttf
+tubi
 tutin
 tv
 tvdb
 tw
+TZ
 ua
 ui
+UID
 uncompress
+unconfigured
 unionfs
 unmanaged
 unplayed
@@ -354,7 +384,9 @@ uri
 url
 urls
 userlist
+uses
 utills
+ValueError
 vecteezy
 venv
 visualstudio
@@ -387,4 +419,5 @@ yozoraxcii
 yyyy
 zap
 zeroqi
+ziva
 zh

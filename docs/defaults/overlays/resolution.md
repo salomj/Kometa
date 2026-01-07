@@ -84,6 +84,7 @@ Recommendations: Editions overlay is designed to use the Editions field within P
 | Definitive          | `definitive`    | `7`    |
 | Open Matte          | `openmatte`     | `6`    |
 | Ulysses             | `ulysses`       | `5`    |
+| Producer's Cut      | `producers`     | `4`    |
 
 ## "Dovetail" versions
 
@@ -106,7 +107,7 @@ This is not something you can enable or disable independently; it's an internal 
 
 {% 
     include-markdown "./../../templates/defaults/base/mid.md" 
-    replace='{"CODE_NAME": "resolution", "collection_files": "overlay_files"}' 
+    replace='{"CODE_NAME": "resolution", "collection_files": "overlay_files", "collections:": "overlays:"}' 
     include-tags='all|movie|show|episode|season' 
 %}
     ```yaml
@@ -130,7 +131,7 @@ This is not something you can enable or disable independently; it's an internal 
     4.  Stops this resolution overlay applying
     5.  Assuming that this library only contains 4K Movies, we will want to disable all non-4K overlays from processing to increase performance
 
-
+    ```yaml
         overlay_files:
           - default: status
             template_variables:
@@ -161,7 +162,7 @@ This is not something you can enable or disable independently; it's an internal 
 
     {% include-markdown "./../../templates/variable_list.md" include-tags="sup1" rewrite-relative-urls=false %}
 
-{% include-markdown "./../../templates/defaults/base/overlays/shared.md" end="<!--text-variables-->" %}
+{% include-markdown "./../../templates/defaults/base/overlays/shared.md" replace='{"CODE_NAME": "resolution"}' %}
 {% include-markdown "./../../templates/defaults/base/values.md" rewrite-relative-urls=false %}
 
     === "Resolution/Edition Overlays"

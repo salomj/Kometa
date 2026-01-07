@@ -28,7 +28,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `<<key_name>>`
 
-    ??? tip "Default Template (click to expand)"
+    ??? tip "Default Template (Click to Expand)"
 
         ```yaml
         default_template:
@@ -65,7 +65,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `<<key_name>>`
 
-    ??? tip "Default Template (click to expand)"
+    ??? tip "Default Template (Click to Expand)"
 
         ```yaml
         default_template:
@@ -105,7 +105,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `<<key_name>> <<library_type>>s`
 
-    ??? tip "Default Template (click to expand)"
+    ??? tip "Default Template (Click to Expand)"
 
         ```yaml
         default_template:
@@ -141,7 +141,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `<<key_name>> <<library_type>>s`
 
-    ??? tip "Default Template (click to expand)"
+    ??? tip "Default Template (Click to Expand)"
 
         ```yaml
         default_template:
@@ -166,7 +166,7 @@ requirements of creating the collection.
     
     **`type` Value:** `imdb_awards`
 
-    **`data` Value:** [Dictionary](../kometa/yaml.md#dictionaries) of Attributes
+    **`data` Value:** Dictionary :material-information-outline:{ data-tooltip data-tooltip-id="tippy-yaml-dictionaries" } of Attributes
 
     ??? blank "`event_id` - Determines the [IMDb Event](https://www.imdb.com/event/) used.<a class="headerlink" href="#imdb-awards-event-id" title="Permanent link">¶</a>"
         
@@ -212,7 +212,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `<<key_name>>`
 
-    ??? tip "Default Template (click to expand)"
+    ??? tip "Default Template (Click to Expand)"
 
         ```yaml
         default_template:
@@ -242,13 +242,13 @@ requirements of creating the collection.
     
     **`type` Value:** `letterboxd_user_lists`
 
-    **`data` Value:** [Dictionary](../kometa/yaml.md#dictionaries) of Attributes
+    **`data` Value:** Dictionary :material-information-outline:{ data-tooltip data-tooltip-id="tippy-yaml-dictionaries" } of Attributes
 
     ??? blank "`username` - Determines the Usernames to scan for lists.<a class="headerlink" href="#letterboxd-user-lists-username" title="Permanent link">¶</a>"
         
         <div id="letterboxd-user-lists-username" />This determines which Usernames are scanned. 
 
-        **Allowed Values:** Username or list of Usernames
+        **Allowed Values:** Username or list :material-information-outline:{ data-tooltip data-tooltip-id="tippy-yaml-lists" } of Usernames
 
     ??? blank "`sort_by` - Determines the sort that the lists are returned.<a class="headerlink" href="#letterboxd-user-lists-sort-by" title="Permanent link">¶</a>"
         
@@ -274,7 +274,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `<<key_name>>`
 
-    ??? tip "Default Template (click to expand)"
+    ??? tip "Default Template (Click to Expand)"
 
         ```yaml
         default_template:
@@ -305,7 +305,7 @@ requirements of creating the collection.
     
     **`type` Value:** `trakt_user_lists`
 
-    **`data` Value:** List of Trakt Users (Use `me` to reference the authenticated user)
+    **`data` Value:** List :material-information-outline:{ data-tooltip data-tooltip-id="tippy-yaml-lists" } of Trakt Users (Use `me` to reference the authenticated user)
 
     **Valid Library Types:** Movies and Shows
     
@@ -315,7 +315,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `<<key_name>>`
 
-    ??? tip "Default Template (click to expand)"
+    ??? tip "Default Template (Click to Expand)"
 
         ```yaml
         default_template:
@@ -355,7 +355,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `<<key_name>>`
 
-    ??? tip "Default Template (click to expand)"
+    ??? tip "Default Template (Click to Expand)"
 
         ```yaml
         default_template:
@@ -383,7 +383,7 @@ requirements of creating the collection.
     
     **`type` Value:** `trakt_people_list`
 
-    **`data` Value:** List of Trakt URLs
+    **`data` Value:** List :material-information-outline:{ data-tooltip data-tooltip-id="tippy-yaml-lists" } of Trakt URLs
 
     **Valid Library Types:** Movies and Shows
     
@@ -393,7 +393,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `<<key_name>>`
 
-    ??? tip "Default Template (click to expand)"
+    ??? tip "Default Template (Click to Expand)"
 
         ```yaml
         default_template:
@@ -421,7 +421,7 @@ requirements of creating the collection.
     
     **`type` Value:** `actor`
 
-    **`data` Value:** [Dictionary](../kometa/yaml.md#dictionaries) of Attributes
+    **`data` Value:** Dictionary :material-information-outline:{ data-tooltip data-tooltip-id="tippy-yaml-dictionaries" } of Attributes
 
     ??? blank "`depth` - Determines how many "top" acting credits per item.<a class="headerlink" href="#actor-depth" title="Permanent link">¶</a>"
         
@@ -461,7 +461,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `<<key_name>>`
 
-    ??? tip "Default Template (click to expand)"
+    ??? tip "Default Template (Click to Expand)"
 
         ```yaml
         default_template:
@@ -504,7 +504,7 @@ requirements of creating the collection.
     
     **`type` Value:** `director`
 
-    **`data` Value:** [Dictionary](../kometa/yaml.md#dictionaries) of Attributes
+    **`data` Value:** Dictionary :material-information-outline:{ data-tooltip data-tooltip-id="tippy-yaml-dictionaries" } of Attributes
 
     ??? blank "`depth` - Determines how many "top" directing credits per item.<a class="headerlink" href="#director-depth" title="Permanent link">¶</a>"
         
@@ -544,7 +544,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `<<key_name>>`
 
-    ??? tip "Default Template (click to expand)"
+    ??? tip "Default Template (Click to Expand)"
 
         ```yaml
         default_template:
@@ -587,7 +587,7 @@ requirements of creating the collection.
     
     **`type` Value:** `writer`
 
-    **`data` Value:** [Dictionary](../kometa/yaml.md#dictionaries) of Attributes
+    **`data` Value:** Dictionary :material-information-outline:{ data-tooltip data-tooltip-id="tippy-yaml-dictionaries" } of Attributes
 
     ??? blank "`depth` - Determines how many "top" writing credits per item.<a class="headerlink" href="#writer-depth" title="Permanent link">¶</a>"
         
@@ -627,7 +627,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `<<key_name>>`
 
-    ??? tip "Default Template (click to expand)"
+    ??? tip "Default Template (Click to Expand)"
 
         ```yaml
         default_template:
@@ -670,7 +670,7 @@ requirements of creating the collection.
     
     **`type` Value:** `producer`
 
-    **`data` Value:** [Dictionary](../kometa/yaml.md#dictionaries) of Attributes
+    **`data` Value:** Dictionary :material-information-outline:{ data-tooltip data-tooltip-id="tippy-yaml-dictionaries" } of Attributes
 
     ??? blank "`depth` - Determines how many "top" producing credits per item.<a class="headerlink" href="#producer-depth" title="Permanent link">¶</a>"
         
@@ -710,7 +710,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `<<key_name>>`
 
-    ??? tip "Default Template (click to expand)"
+    ??? tip "Default Template (Click to Expand)"
 
         ```yaml
         default_template:
@@ -762,7 +762,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `Top <<key_name>> <<library_type>>s`
 
-    ??? tip "Default Template (click to expand)"
+    ??? tip "Default Template (Click to Expand)"
 
         ```yaml
         default_template:
@@ -801,7 +801,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `Top <<key_name>> Albums`
 
-    ??? tip "Default Template (click to expand)"
+    ??? tip "Default Template (Click to Expand)"
 
         ```yaml
         default_template:
@@ -841,7 +841,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `Top <<key_name>> <<library_type>>s`
 
-    ??? tip "Default Template (click to expand)"
+    ??? tip "Default Template (Click to Expand)"
 
         ```yaml
         default_template:
@@ -862,7 +862,7 @@ requirements of creating the collection.
             type: content_rating
         ```
 
-??? blank "`year` - Collections based on content ratings.<a class="headerlink" href="#year" title="Permanent link">¶</a>"
+??? blank "`year` - Collections based on years.<a class="headerlink" href="#year" title="Permanent link">¶</a>"
 
     <div id="year" />Creates collections for each year found in the library.
 
@@ -880,7 +880,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `Best <<library_type>>s of <<key_name>>`
 
-    ??? tip "Default Template (click to expand)"
+    ??? tip "Default Template (Click to Expand)"
 
         ```yaml
         default_template:
@@ -901,7 +901,7 @@ requirements of creating the collection.
             type: year
         ```
 
-??? blank "`episode_year` - Collections based on content ratings.<a class="headerlink" href="#episode-year" title="Permanent link">¶</a>"
+??? blank "`episode_year` - Collections based on episode year.<a class="headerlink" href="#episode-year" title="Permanent link">¶</a>"
 
     <div id="episode-year" />Creates collections for each year associated with episodes found in the library.
 
@@ -919,7 +919,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `Best Episodes of <<key_name>>`
 
-    ??? tip "Default Template (click to expand)"
+    ??? tip "Default Template (Click to Expand)"
 
         ```yaml
         default_template:
@@ -959,7 +959,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `Best <<library_type>> of the <<key_name>>`
 
-    ??? tip "Default Templates (click to expand)"
+    ??? tip "Default Templates (Click to Expand)"
         
         === "Movie Default"
 
@@ -1013,7 +1013,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `Top <<key_name>> <<library_type>>s`
 
-    ??? tip "Default Template (click to expand)"
+    ??? tip "Default Template (Click to Expand)"
        
         ```yaml
         default_template:
@@ -1052,7 +1052,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `<<key_name>> <<library_type>>s`
 
-    ??? tip "Default Template (click to expand)"
+    ??? tip "Default Template (Click to Expand)"
        
         ```yaml
         default_template:
@@ -1091,7 +1091,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `Top <<key_name>> <<library_type>>s`
 
-    ??? tip "Default Template (click to expand)"
+    ??? tip "Default Template (Click to Expand)"
        
         ```yaml
         default_template:
@@ -1130,7 +1130,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `Top <<key_name>> <<library_type>>s`
 
-    ??? tip "Default Template (click to expand)"
+    ??? tip "Default Template (Click to Expand)"
        
         ```yaml
         default_template:
@@ -1169,7 +1169,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `Top <<key_name>> <<library_type>>s`
 
-    ??? tip "Default Template (click to expand)"
+    ??? tip "Default Template (Click to Expand)"
        
         ```yaml
         default_template:
@@ -1208,7 +1208,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `Top <<key_name>> <<library_type>>s`
 
-    ??? tip "Default Template (click to expand)"
+    ??? tip "Default Template (Click to Expand)"
        
         ```yaml
         default_template:
@@ -1247,7 +1247,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `Top <<key_name>> <<library_type>>s`
 
-    ??? tip "Default Template (click to expand)"
+    ??? tip "Default Template (Click to Expand)"
        
         ```yaml
         default_template:
@@ -1286,7 +1286,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `Most Played <<key_name>> Artists`
 
-    ??? tip "Default Template (click to expand)"
+    ??? tip "Default Template (Click to Expand)"
        
         ```yaml
         default_template:
@@ -1325,7 +1325,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `Most Played <<key_name>> Albums`
 
-    ??? tip "Default Template (click to expand)"
+    ??? tip "Default Template (Click to Expand)"
        
         ```yaml
         default_template:
@@ -1365,7 +1365,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `Most Played <<key_name>> Tracks`
 
-    ??? tip "Default Template (click to expand)"
+    ??? tip "Default Template (Click to Expand)"
        
         ```yaml
         default_template:
@@ -1405,7 +1405,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `Most Played <<key_name>> Artists`
 
-    ??? tip "Default Template (click to expand)"
+    ??? tip "Default Template (Click to Expand)"
        
         ```yaml
         default_template:
@@ -1444,7 +1444,7 @@ requirements of creating the collection.
 
     **Default `title_format`:** `Most Played <<key_name>> Artists`
 
-    ??? tip "Default Template (click to expand)"
+    ??? tip "Default Template (Click to Expand)"
        
         ```yaml
         default_template:
@@ -1474,7 +1474,7 @@ requirements of creating the collection.
     
     **`type` Value:** `number`
 
-    **`data` Value:** [Dictionary](../kometa/yaml.md#dictionaries) of Attributes
+    **`data` Value:** Dictionary :material-information-outline:{ data-tooltip data-tooltip-id="tippy-yaml-dictionaries" } of Attributes
 
     ??? blank "`starting` - Determines the starting number.<a class="headerlink" href="#number-starting" title="Permanent link">¶</a>"
         
@@ -1550,7 +1550,7 @@ requirements of creating the collection.
     
     **`type` Value:** `custom`
 
-    **`data` Value:** [Dictionary](../kometa/yaml.md#dictionaries) with the keys being the `dynamic key` and the values 
+    **`data` Value:** Dictionary :material-information-outline:{ data-tooltip data-tooltip-id="tippy-yaml-dictionaries" } with the keys being the `dynamic key` and the values 
     being the `key name`
 
     **Valid Library Types:** Movies, Shows, Music, and Video
@@ -1587,7 +1587,7 @@ requirements of creating the collection.
               bet: BET+
               itvx: ITVX
               disney: Disney+
-              max: Max
+              hbo-max: HBO Max
               hulu: Hulu
               netflix: Netflix
               now: NOW

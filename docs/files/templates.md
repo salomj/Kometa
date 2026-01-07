@@ -11,7 +11,7 @@ Templates definitions are placed under the top level attribute `templates`. The 
 templates can either be defined in the same file as the other definitions or from an external file using the top level 
 `external_templates` attribute. See [File Blocks](../config/files.md) for how to define files for `external_templates`.
 
-??? example "External Template Example (click to expand)"
+??? example "External Template Example (Click to Expand)"
 
     In this example this is a file in your config folder called `my_templates.yml`.
 
@@ -52,7 +52,7 @@ In addition, templates also have a few special attributes that they can use:
 ??? blank "`default` - Sets what Template Variables default to.<a class="headerlink" href="#default" title="Permanent link">¶</a>"
 
     <div id="default" />The `default` attribute allows default values for Template Variables which will be used if they're not 
-    specified in the call. You need to provide a list of variables and the value that variable should get if not told differently when the template is referenced. See the tooltips below.
+    specified in the call. You need to provide a list :material-information-outline:{ data-tooltip data-tooltip-id="tippy-yaml-lists" } of variables and the value that variable should get if not told differently when the template is referenced. See the tooltips below.
 
     **A variable cannot be default if it is a conditional variable.**
 
@@ -138,10 +138,10 @@ In addition, templates also have a few special attributes that they can use:
     <div id="conditionals" />Each conditional is identified by its mapping name under the top level `conditionals` 
     attribute can have these attributes:
 
-    |  Attribute   | Description                                                                                                                                                                                                                                                      |
-    |:------------:|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-    | `conditions` | A list of condition blocks where if all conditions are met then the variable will be the `value` specified in that condition block. Once all conditions in a block are met, that `value` will be used and no other blocks will be run.<br>**This attribute is required** |
-    |  `default`   | The default value for when no condition block is met. If default is not specified the variable becomes an optional variable.<br>**This attribute is optional**                                                                                                         |
+    |  Attribute   | Description                                                                                                                                                                                                                                                                                                                                                |
+    |:------------:|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+    | `conditions` | A list :material-information-outline:{ data-tooltip data-tooltip-id="tippy-yaml-lists" } of condition blocks where if all conditions are met then the variable will be the `value` specified in that condition block. Once all conditions in a block are met, that `value` will be used and no other blocks will be run.<br>**This attribute is required** |
+    |  `default`   | The default value for when no condition block is met. If default is not specified the variable becomes an optional variable.<br>**This attribute is optional**                                                                                                                                                                                             |
     
     #### Condition Blocks
 
@@ -211,7 +211,7 @@ In addition, templates also have a few special attributes that they can use:
 
 ??? blank "`move_prefix` - List of prefixes to move to the end of the collection/playlist name for sorting.<a class="headerlink" href="#move-prefix" title="Permanent link">¶</a>"
 
-    <div id="move-prefix" />The `move_prefix` attribute can be used to specify a list or comma-separated string of 
+    <div id="move-prefix" />The `move_prefix` attribute can be used to specify a List :material-information-outline:{ data-tooltip data-tooltip-id="tippy-yaml-lists" } or comma-separated string of 
     prefixes to move to the end of the collection/playlist name for sorting. This changes the Template Variables
     `collection_sort`, `playlist_sort`, and `mapping_sort`.
 
@@ -234,7 +234,7 @@ In addition, templates also have a few special attributes that they can use:
               name: Movies
               tmdb_id: 86311
           Iron Man:
-    1        template:
+            template:
               name: Movies
               tmdb_id: 131292
         ```
@@ -266,7 +266,7 @@ changing in the template.
 The `name` attribute is what tells the template call which template to use. Its value must correspond exactly to the 
 template mapping name you want to call. 
 
-??? example "Template Name Example (click to expand)"
+??? example "Template Name Example (Click to Expand)"
     
     This is an example using the template name `Actor` showing the template being called in two different ways.
     
@@ -300,7 +300,7 @@ exactly with the Template Variable name surrounded by `<<` and `>>` in the templ
 will replace any part of any value that contains the Template Variable name surrounded by `<<` and `>>` in the template 
 with the specified Template Variable's value.
 
-??? example "Template Variables Example (click to expand)"
+??? example "Template Variables Example (Click to Expand)"
     
     This is an example using the template name `Actor` showing the template being called in two different ways.
     
@@ -332,7 +332,7 @@ with the specified Template Variable's value.
 When using multiple Templates in a single definition you can send the same variable to all templates by using the 
 `variables` attribute.
 
-??? example "Multi-Template Variables Example (click to expand)"
+??? example "Multi-Template Variables Example (Click to Expand)"
 
     ```yaml
     templates:
